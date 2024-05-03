@@ -158,7 +158,7 @@ const Dashboard = () => {
                 <div className="d-flex flex-column w-100">
                     <strong className="mb-4">Top Products</strong>
                     <div>
-                        {topProducts.products.length > 0 ? getTopProductsData(5).map(product => (
+                        {topProducts && topProducts.products && topProducts.products.length > 0 ? getTopProductsData(5).map(product => (
                             <div className="top-product d-flex flex-row" key={Object.keys(product)[0]}>
                                 {Object.values(product)[0].name}
                                 <div className="ms-auto">

@@ -215,7 +215,7 @@ const Home = () => {
                 <div>
                     <input type="text" value={searchText} onChange={handleSearchTextChanged} className="form-control mb-4" placeholder="Search an item or scan barcode..."></input>
                     <div className="p-2">
-                        {applySearchText().map((product, index) => (
+                        {products && applySearchText().map((product, index) => (
                             <div key={product.id} className="d-flex flex-row mb-2 align-items-center">
                                 <span className="me-2">{product.name} <small>{product.subtitle}</small></span>
                                 <span>@ { setDigitFormat(product.price) }</span>

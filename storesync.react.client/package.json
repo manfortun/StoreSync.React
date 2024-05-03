@@ -1,6 +1,7 @@
 {
   "name": "storesync.react.client",
   "private": true,
+  "homepage": "/bennystore",
   "version": "0.0.0",
   "type": "module",
   "scripts": {

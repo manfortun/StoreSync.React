@@ -71,6 +71,7 @@ const Register = () => {
             })
             .catch(error => {
                 toast.error('Unable to save product. Contact administrator.');
+                console.log(error);
             });
     }
 
@@ -89,6 +90,7 @@ const Register = () => {
             })
             .catch(error => {
                 toast.error('Unable to update product. Contact administrator.');
+                console.log(error);
             });
     }
 

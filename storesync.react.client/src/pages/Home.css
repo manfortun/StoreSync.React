@@ -75,6 +75,17 @@ input::-webkit-inner-spin-button {
     width: inherit;
 }
 
+.pname {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 170px;
+}
+
+.st {
+    margin-top: 3px;
+}
+
 @keyframes newPurchase {
     from {
         margin-left: 300px;

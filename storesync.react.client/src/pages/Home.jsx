@@ -103,8 +103,6 @@ const Home = () => {
     const applySearchText = () => {
         if (searchText.length <= 0) return products;
 
-        setConfirmDelete(false);
-
         const searchTextLower = searchText.toLowerCase();
 
         return products.filter(product => {
@@ -216,8 +214,8 @@ const Home = () => {
                     <input type="text" value={searchText} onChange={handleSearchTextChanged} className="form-control mb-4" placeholder="Search an item or scan barcode..."></input>
                     <div className="p-2">
                         {products && applySearchText().map((product, index) => (
-                            <div key={product.id} className="d-flex flex-row mb-2 align-items-center">
-                                <span className="me-2">{product.name} <small>{product.subtitle}</small></span>
+                            <div key={product.id} className="d-flex flex-row mb-2">
+                                <span className="me-2 d-flex flex-row"><div className="me-1 pname">{product.name}</div><small className="st">{product.subtitle}</small></span>
                                 <span>@ { setDigitFormat(product.price) }</span>
                                 <button onClick={handleTap} value={product.id } className="btn btn-outline-primary ms-auto">Add</button>
                             </div>

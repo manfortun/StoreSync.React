@@ -7,6 +7,7 @@ import { BsUpcScan } from 'react-icons/bs';
 
 const Register = () => {
     const [update, setUpdate] = useState(false);
+    const [confirmDelete, setConfirmDelete] = useState(false);
     const [product, setProduct] = useState({
         id: '',
         name: '',
@@ -24,24 +25,28 @@ const Register = () => {
                 setProduct(response.data);
                 setUpdate(true);
             });
+        setConfirmDelete(false);
     }
 
     const handleNameChange = (event) => {
         const value = event.target.value;
 
         setProduct({ ...product, name: value });
+        setConfirmDelete(false);
     }
 
     const handleSubtitleChange = (event) => {
         const value = event.target.value;
 
         setProduct({ ...product, subtitle: value });
+        setConfirmDelete(false);
     }
 
     const handlePriceChange = (event) => {
         const value = event.target.value;
 
         setProduct({ ...product, price: parseInt(value) });
+        setConfirmDelete(false);
     }
 
     const getSaveButton = () => {
@@ -94,6 +99,21 @@ const Register = () => {
             });
     }
 
+    const handleClearClick = (event) => {
+        if (confirmDelete) {
+            setProduct({
+                id: '',
+                name: '',
+                subtitle: '',
+                price: 0
+            });
+
+            setConfirmDelete(false);
+        } else {
+            setConfirmDelete(true);
+        }
+    }
+
     return (
         <div className="d-flex flex-column justify-content-center align-items-center p-5">
         <ToastContainer />
@@ -115,7 +135,11 @@ const Register = () => {
                     <label htmlFor="floatingInput">Price (Php)</label>
                 </div>
                 <div className="d-flex flex-row">
-                    <button className="w-100 btn btn-outline-danger me-1">Clear</button>
+                    {confirmDelete ? (
+                        <button className="w-100 btn btn-danger me-1" onClick={(event) => handleClearClick(event)}>Click to confirm</button>
+                    ) : (
+                        <button className="w-100 btn btn-outline-danger me-1" onClick={(event) => handleClearClick(event)}>Delete</button>
+                    )}
                     {getSaveButton() }
                 </div>
             </div>

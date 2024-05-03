@@ -1,1 +1,1 @@
-export const BARCODE_LENGTH = 13;
+export const BARCODE_LENGTH = 8;

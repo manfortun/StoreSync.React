@@ -1,0 +1,87 @@
+.cashier {
+    background-color: rgb(240, 240, 240);
+    padding: 1rem;
+    border-radius: 1rem;
+    display: flex;
+    flex-direction: row;
+    width: 900px;
+    height: 500px;
+}
+
+small {
+    color: rgb(150, 150, 150);
+    font-style: italic;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+}
+
+.number {
+    text-align: end;
+    font-family: monospace;
+    letter-spacing: 5px;
+}
+
+.payment {
+    width: 100px!important;
+}
+
+.product {
+    display: flex;
+    flex-direction: row;
+    vertical-align: middle;
+}
+
+.product>span {
+    padding-top: 5px;
+}
+
+.product-count {
+    width: 50px!important;
+    margin-right: 10px;
+    background-color: transparent;
+    border: none;
+    padding: 5px;
+    text-align: center;
+}
+
+.quickview {
+    padding: 1rem;
+    height: 88vh;
+    border-radius: 1rem;
+    background-color: rgb(240, 240, 240);
+}
+
+.purchase {
+    background-color: white;
+    padding: 8px;
+    border-radius: 1rem;
+    position: relative;
+    width: inherit;
+    animation-name: newPurchase;
+    margin-bottom: 5px;
+    animation-duration: 0.5s;
+    cursor: pointer;
+}
+
+.purchase-div {
+    overflow-x: clip;
+}
+
+.purchase-list {
+    position: relative;
+    width: inherit;
+}
+
+@keyframes newPurchase {
+    from {
+        margin-left: 300px;
+        opacity: 0;
+    }
+    to {
+        margin-left: 0px;
+        opacity: 1;
+    }
+}

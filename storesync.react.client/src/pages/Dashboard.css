@@ -1,0 +1,29 @@
+.doughnut {
+    height: 300px;
+    width: 300px;
+}
+
+.dashboard {
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+    align-items: center;
+    background-color: rgb(240, 240, 240);
+    width: 350px;
+    height: 380px;
+    padding: 1rem;
+    padding-right: 2rem;
+    padding-left: 2rem;
+    border-radius: 1rem;
+}
+
+.dateinput {
+    width: 150px!important;
+}
+
+.top-product {
+    padding: 10px;
+    border-radius: 1rem;
+    background-color: white;
+    margin-bottom: 5px;
+}

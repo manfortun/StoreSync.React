@@ -12,7 +12,7 @@ using StoreSync.React.Server.DataAccess;
 namespace StoreSync.React.Server.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20240502234745_Init")]
+    [Migration("20240503033555_Init")]
     partial class Init
     {
         /// <inheritdoc />
@@ -47,19 +47,19 @@ namespace StoreSync.React.Server.Migrations
                         new
                         {
                             Id = "4902430453295",
-                            DateCreated = new DateTime(2024, 5, 2, 23, 47, 44, 367, DateTimeKind.Utc).AddTicks(5712),
+                            DateCreated = new DateTime(2024, 5, 3, 11, 35, 55, 381, DateTimeKind.Local).AddTicks(2924),
                             Value = 8.0
                         },
                         new
                         {
                             Id = "7622300637996",
-                            DateCreated = new DateTime(2024, 5, 2, 23, 47, 44, 367, DateTimeKind.Utc).AddTicks(5718),
+                            DateCreated = new DateTime(2024, 5, 3, 11, 35, 55, 381, DateTimeKind.Local).AddTicks(2936),
                             Value = 22.0
                         },
                         new
                         {
                             Id = "4800361410816",
-                            DateCreated = new DateTime(2024, 5, 2, 23, 47, 44, 367, DateTimeKind.Utc).AddTicks(5722),
+                            DateCreated = new DateTime(2024, 5, 3, 11, 35, 55, 381, DateTimeKind.Local).AddTicks(2937),
                             Value = 13.0
                         });
                 });

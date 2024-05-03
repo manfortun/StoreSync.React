@@ -46,8 +46,8 @@ public class AppDbContext : DbContext
             new Product { Id = "4800361410816", Name = "Bear Brand", Subtitle = "Swak", IsDeleted = false });
 
         modelBuilder.Entity<Price>().HasData(
-            new Price { Id = "4902430453295", DateCreated = DateTime.UtcNow, Value = 8.00d },
-            new Price { Id = "7622300637996", DateCreated = DateTime.UtcNow, Value = 22.00d },
-            new Price { Id = "4800361410816", DateCreated = DateTime.UtcNow, Value = 13.00d });
+            new Price { Id = "4902430453295", DateCreated = DateTime.Now, Value = 8.00d },
+            new Price { Id = "7622300637996", DateCreated = DateTime.Now, Value = 22.00d },
+            new Price { Id = "4800361410816", DateCreated = DateTime.Now, Value = 13.00d });
     }
 }

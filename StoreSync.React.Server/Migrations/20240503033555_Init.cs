@@ -98,9 +98,9 @@ namespace StoreSync.React.Server.Migrations
                 columns: new[] { "DateCreated", "Id", "Value" },
                 values: new object[,]
                 {
-                    { new DateTime(2024, 5, 2, 23, 47, 44, 367, DateTimeKind.Utc).AddTicks(5722), "4800361410816", 13.0 },
-                    { new DateTime(2024, 5, 2, 23, 47, 44, 367, DateTimeKind.Utc).AddTicks(5712), "4902430453295", 8.0 },
-                    { new DateTime(2024, 5, 2, 23, 47, 44, 367, DateTimeKind.Utc).AddTicks(5718), "7622300637996", 22.0 }
+                    { new DateTime(2024, 5, 3, 11, 35, 55, 381, DateTimeKind.Local).AddTicks(2937), "4800361410816", 13.0 },
+                    { new DateTime(2024, 5, 3, 11, 35, 55, 381, DateTimeKind.Local).AddTicks(2924), "4902430453295", 8.0 },
+                    { new DateTime(2024, 5, 3, 11, 35, 55, 381, DateTimeKind.Local).AddTicks(2936), "7622300637996", 22.0 }
                 });
 
             migrationBuilder.CreateIndex(

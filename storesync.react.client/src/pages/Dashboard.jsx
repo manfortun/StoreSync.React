@@ -158,14 +158,16 @@ const Dashboard = () => {
                 <div className="d-flex flex-column w-100">
                     <strong className="mb-4">Top Products</strong>
                     <div>
-                        {getTopProductsData(5).map(product => (
+                        {topProducts.products.length > 0 ? getTopProductsData(5).map(product => (
                             <div className="top-product d-flex flex-row" key={Object.keys(product)[0]}>
                                 {Object.values(product)[0].name}
                                 <div className="ms-auto">
                                     <small>Php</small> {setDigitFormat(Object.values(product)[0].value)}
                                 </div>
                             </div>
-                        )) }
+                        )) : (
+                                <div className="w-100 text-secondary text-center mt-5"><i>No data</i></div>
+                        )}
                     </div>
                 </div>
             </div>

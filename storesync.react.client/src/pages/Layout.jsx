@@ -6,7 +6,7 @@ const Layout = () => {
     return (
         <>
             <div className="d-flex flex-row bg-primary p-3 align-items-center">
-                <div className="position-absolute">
+                <div className="position-absolute d-md-flex d-none">
                     <a href="/"><h5 className="mb-1">Benny's Store</h5></a>
                 </div>
                 <div className="d-flex flex-row justify-content-center w-100">

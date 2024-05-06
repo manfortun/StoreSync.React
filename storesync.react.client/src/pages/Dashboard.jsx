@@ -140,7 +140,7 @@ const Dashboard = () => {
         }
     };
     return (
-        <div className="d-flex flex-column justify-content-center align-items-center topdiv">
+        <div className="d-flex flex-column justify-md-content-center align-items-center topdiv">
             <div className="dashboard-wide mt-3 d-flex flex-row">
                 <div className="ms-auto">
                     <span className="me-1">Select date:</span>
@@ -148,8 +148,8 @@ const Dashboard = () => {
                     <input type="date" className="form-control ms-auto dateinput" value={selectedDate.toISOString().split('T')[0]} onChange={handleDateChange} />
                 </div>
             </div>
-            <div className="d-flex flex-row justify-content-center align-items-center pt-3">
-                <div className="dashboard me-2">
+            <div className="d-flex flex-md-row flex-column justify-content-center align-items-center pt-3">
+                <div className="dashboard me-md-2 me-0">
                     <div className="d-flex flex-row w-100">
                         <strong>Total Sales</strong>
                     </div>
@@ -180,7 +180,7 @@ const Dashboard = () => {
                         )}
                     </div>
                 </div>
-                <div className="dashboard">
+                <div className="dashboard mt-2 mt-md-0">
                     <div className="d-flex flex-column w-100">
                         <strong className="mb-4">Top Products</strong>
                         <div>
@@ -201,7 +201,7 @@ const Dashboard = () => {
                     </div>
                 </div>
             </div>
-            <div className="dashboard dashboard-wide mt-2 h-100">
+            <div className="dashboard dashboard-wide mt-2 h-100 mb-5">
                 <div className="d-flex flex-column w-100 purchase-list pb-3">
                     <strong className="mb-4">Purchases</strong>
                     {getProductsList().map(p => (

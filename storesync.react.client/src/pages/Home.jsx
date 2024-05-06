@@ -144,13 +144,13 @@ const Home = () => {
     }
 
     return (
-        <div className="row p-4 topdiv">
-        <ToastContainer />
-            <div className="p-3 pt-0 col-9 d-flex flex-column justify-content-top align-items-center">
-                <div className="cashier row">
-                    <div className="mb-2 me-4 d-flex flex-column col">
-                        <input type="number" className="form-control mb-2 number" value={barcode} onChange={handleTap} inputMode="numeric" placeholder="Tap item in barcode scanner"></input>
-                        <div className="d-flex flex-row mt-auto align-items-center">
+        <div className="d-flex flex-column flex-lg-row p-4 topdiv">
+            <ToastContainer />
+            <div className="pb-3 pe-lg-3 pt-0 col-lg-9 d-lg-flex flex-column justify-content-top align-items-center">
+                <div className="cashier d-flex flex-lg-row flex-column">
+                    <div className="mb-2 me-lg-4 d-flex flex-column col">
+                        <input type="number" className="form-control mb-2 number d-lg-flex d-none" value={barcode} onChange={handleTap} inputMode="numeric" placeholder="Tap item in barcode scanner"></input>
+                        <div className="d-flex flex-row mt-lg-auto align-items-center">
                             <span>Payment</span>
                             <input type="number" value={payment} className="ms-auto form-control payment number" inputMode="numeric" onChange={handlePaymentChange} disabled={purchases.length <= 0}></input>
                         </div>
@@ -191,7 +191,7 @@ const Home = () => {
                     </div>
                 </div>
             </div>
-            <div className="col-3 quickview">
+            <div className="col-lg-3 quickview">
                 <div>
                     <input type="text" value={searchText} onChange={handleSearchTextChanged} onMouseDown={() => setSearchText('') } className="form-control mb-4" placeholder="Search an item or scan barcode..."></input>
                     <div className="p-2">

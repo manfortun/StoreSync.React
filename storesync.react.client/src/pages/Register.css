@@ -1,3 +1,9 @@
 .main-div {
     width: 500px;
 }
+
+@media(max-width:586px) {
+    .main-div {
+        width: 100%;
+    }
+}

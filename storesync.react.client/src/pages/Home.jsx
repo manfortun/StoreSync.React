@@ -132,7 +132,7 @@ const Home = () => {
         }));
 
         try {
-            await axios.post(`${BASE_URL}/API/Purchase`, { purchases: newSalesData });
+            await axios.post(`${BASE_URL}/Purchase`, { purchases: newSalesData });
 
             toast.success('Earned Php ' + setDigitFormat(getTotal()));
             setPurchases([]);

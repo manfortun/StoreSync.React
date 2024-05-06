@@ -20,11 +20,27 @@ const Register = () => {
 
         setProduct({ ...product, id: value });
         setUpdate(false);
-        axios.get('https://localhost:7170/API/Product/' + value)
-            .then((response) => {
-                setProduct(response.data);
-                setUpdate(true);
-            });
+
+        if (value.length > 0) {
+            axios.get('https://localhost:7170/API/Product/' + value)
+                .then((response) => {
+                    setProduct(response.data);
+                    setUpdate(true);
+                })
+                .catch(() => {
+                    if (update) {
+                        setProduct({
+                            ...product,
+                            id: value,
+                            name: '',
+                            subtitle: '',
+                            price: 0
+                        });
+                        setUpdate(false);
+                    }
+                });
+        }
+
         setConfirmDelete(false);
     }
 

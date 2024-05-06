@@ -1,1 +1,0 @@
-export const BARCODE_LENGTH = 8;

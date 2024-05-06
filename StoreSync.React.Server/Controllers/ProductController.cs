@@ -36,6 +36,8 @@ public class ProductController : ControllerBase
             productsMapped.Add(newProduct);
         }
 
+        productsMapped = productsMapped.OrderBy(p => p.Name).ThenBy(p => p.Subtitle).ToList();
+
         return Ok(productsMapped);
     }
 
@@ -56,6 +58,56 @@ public class ProductController : ControllerBase
         productMapped.Price = _unitOfWork.Prices.Get(product.Id)?.Value ?? 0;
 
         return Ok(productMapped);
+    }
+
+    [HttpGet("Search/{searchString}")]
+    public IActionResult Search(string searchString)
+    {
+        var products = _unitOfWork.Products.GetAll();
+
+        var searchedProducts = products.Where(p => p.Id.StartsWith(searchString) || p.Id.EndsWith(searchString));
+
+        if (!searchedProducts.Any())
+        {
+            searchString = string.Join("", searchString.ToLower().Split(' '));
+            var matchingProducts = products.Select(p =>
+            {
+                var name = string.Join("", p.Name.ToLower().Split(' '));
+                var subtitle = string.IsNullOrEmpty(p.Subtitle) ? "" : string.Join("", p.Subtitle.ToLower().Split(' '));
+                var searchValue = name + subtitle;
+
+                var matchScore = searchString.Sum(word =>
+                {
+                    if (name.Contains(word)) return 1;
+                    else if (subtitle.Contains(word)) return 1;
+                    else return 0;
+                });
+
+                return new { Product = p, MatchScore = matchScore };
+            });
+
+            if (!matchingProducts.Any(mp => mp.MatchScore > 0))
+            {
+                return NotFound();
+            }
+
+            searchedProducts = matchingProducts
+                .Where(mp => mp.MatchScore == searchString.Length)
+                .OrderByDescending(mp => mp.Product.Name.ToLower().Contains(searchString))
+                .ThenByDescending(mp => !string.IsNullOrEmpty(mp.Product.Subtitle) && mp.Product.Subtitle.ToLower().Contains(searchString))
+                .ThenByDescending(mp => mp.MatchScore)
+                .Select(mp => mp.Product);
+        }
+
+        var searchedProductsMapped = searchedProducts.Select(sp => new ProductRead
+        {
+            Id = sp.Id,
+            Name = sp.Name,
+            Subtitle = sp.Subtitle,
+            Price = _unitOfWork.Prices.Get(sp.Id)?.Value ?? 0
+        });
+
+        return Ok(searchedProductsMapped);
     }
 
     [HttpPost]

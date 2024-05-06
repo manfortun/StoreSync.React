@@ -10,16 +10,11 @@ const Dashboard = () => {
     const [summary, setSummary] = useState();
     const [graphData, setGraphData] = useState();
     const [selectedDate, setSelectedDate] = useState(new Date());
-    const [topProducts, setTopProducts] = useState();
 
     useEffect(() => {
         getSaleSummary();
         weeklyLineGraph();
     }, [selectedDate]);
-
-    useEffect(() => {
-        getTopProductsSummary();
-    }, []);
 
     const getSaleSummary = () => {
         const formattedDate = selectedDate.toISOString();
@@ -30,13 +25,6 @@ const Dashboard = () => {
             })
             .catch(error => {
                 console.log(error);
-            });
-    }
-
-    const getTopProductsSummary = () => {
-        axios.get('https://localhost:7170/API/Purchase/TopProducts')
-            .then(response => {
-                setTopProducts(response.data);
             });
     }
 
@@ -54,6 +42,7 @@ const Dashboard = () => {
                 setGraphData(response.data);
             });
     }
+
     const getDayName = (dateString) => {
         const date = new Date(dateString);
         const dayIndex = date.getDay();
@@ -87,17 +76,47 @@ const Dashboard = () => {
     }
 
     const getTopProductsData = (count) => {
-        if (!topProducts || !topProducts.products) return [];
+        if (!summary || !summary.productSales) return [];
 
-        const entries = Object.entries(topProducts.products);
+        const entries = Object.entries(summary.productSales);
 
-        entries.sort((a, b) => b[1] - a[1]);
+        const sorted = entries.sort((a, b) => b[1].total - a[1].total);
 
-        const ranked = Object.fromEntries(entries.slice(0, count));
+        const ranked = sorted.slice(0, count);
 
-        return Object.entries(ranked).map(([key, value]) => ({
-            [key]: { name: topProducts.productNames[key], value }
+        return ranked.map(([key, value]) => ({
+            [key]: {
+                name: value.name,
+                subtitle: value.subtitle,
+                count: value.count,
+                total: value.total,
+            }
         }));
+    }
+
+    const getProductsList = () => {
+        if (!summary || !summary.productSales) return [];
+
+        const entries = Object.entries(summary.productSales);
+
+        const sorted = entries.sort((a, b) => {
+            if (a[1].name < b[1].name) return -1;
+            if (a[1].name > b[1].name) return 1;
+            if (a[1].subtitle < b[1].subtitle) return -1;
+            if (a[1].subtitle > b[1].subtitle) return 1;
+            return 0;
+        });
+
+        const mapped = sorted.map(([key, value]) => ({
+            [key]: {
+                name: value.name,
+                subtitle: value.subtitle,
+                count: value.count,
+                total: value.total,
+            }
+        }));
+
+        return mapped;
     }
 
     const optionss = {
@@ -121,54 +140,84 @@ const Dashboard = () => {
         }
     };
     return (
-        <div className="d-flex flex-row justify-content-center align-items-center pt-5">
-            <div className="dashboard me-2">
-                <div className="d-flex flex-row w-100">
-                    <strong>Total Sales</strong>
+        <div className="d-flex flex-column justify-content-center align-items-center topdiv">
+            <div className="dashboard-wide mt-3 d-flex flex-row">
+                <div className="ms-auto">
+                    <span className="me-1">Select date:</span>
+                    <small>(DD/MM/YYYY)</small>
                     <input type="date" className="form-control ms-auto dateinput" value={selectedDate.toISOString().split('T')[0]} onChange={handleDateChange} />
                 </div>
-                {summary && (
-                    <>
-                        <div className="d-flex flex-row w-100 mb-4 mt-3">
-                            <span className="me-2">
-                                Php
-                            </span>
-                            <h3>
-                                {setDigitFormat(summary.saleForTheDay)}
-                            </h3>
-                        </div>
-                        <div className="d-flex flex-row w-100">
-                            <span>
-                                Daily Average
-                            </span>
-                            <span className="ms-auto">
-                                <small className="me-1">Php</small>
-                                {setDigitFormat(summary.dailyAverage)}
-                            </span>
-                        </div>
-                    </>
-                )}
-                <div className="mt-5">
-                    {graphData && graphData.sales && (
-                        <Line data={chartData()} options={optionss} />
-                    )}
-                </div>
             </div>
-            <div className="dashboard">
-                <div className="d-flex flex-column w-100">
-                    <strong className="mb-4">Top Products</strong>
-                    <div>
-                        {topProducts && topProducts.products && topProducts.products.length > 0 ? getTopProductsData(5).map(product => (
-                            <div className="top-product d-flex flex-row" key={Object.keys(product)[0]}>
-                                {Object.values(product)[0].name}
-                                <div className="ms-auto">
-                                    <small>Php</small> {setDigitFormat(Object.values(product)[0].value)}
-                                </div>
+            <div className="d-flex flex-row justify-content-center align-items-center pt-3">
+                <div className="dashboard me-2">
+                    <div className="d-flex flex-row w-100">
+                        <strong>Total Sales</strong>
+                    </div>
+                    {summary && (
+                        <>
+                            <div className="d-flex flex-row w-100 mb-4 mt-3">
+                                <span className="me-2">
+                                    Php
+                                </span>
+                                <h3>
+                                    {setDigitFormat(summary.saleForTheDay)}
+                                </h3>
                             </div>
-                        )) : (
-                                <div className="w-100 text-secondary text-center mt-5"><i>No data</i></div>
+                            <div className="d-flex flex-row w-100">
+                                <span>
+                                    Daily Average
+                                </span>
+                                <span className="ms-auto">
+                                    <small className="me-1">Php</small>
+                                    {setDigitFormat(summary.dailyAverage)}
+                                </span>
+                            </div>
+                        </>
+                    )}
+                    <div className="mt-5">
+                        {graphData && graphData.sales && (
+                            <Line data={chartData()} options={optionss} />
                         )}
                     </div>
+                </div>
+                <div className="dashboard">
+                    <div className="d-flex flex-column w-100">
+                        <strong className="mb-4">Top Products</strong>
+                        <div>
+                            {getTopProductsData(5).map(product => (
+                                <div className="top-product d-flex flex-row" key={Object.keys(product)[0]}>
+                                    <span>
+                                        {Object.values(product)[0].name}
+                                        {Object.values(product)[0].subtitle && (
+                                            <small className="ms-1">{Object.values(product)[0].subtitle}</small>
+                                        )}
+                                    </span>
+                                    <div className="ms-auto">
+                                        <small>Php</small> {setDigitFormat(Object.values(product)[0].total)}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div className="dashboard dashboard-wide mt-2">
+                <div className="d-flex flex-column w-100 purchase-list">
+                    <strong className="mb-4">Purchases</strong>
+                    {getProductsList().map(p => (
+                        <div key={Object.keys(p)[0]} className="d-flex flex-row">
+                            <strong className="me-2 pt">{Object.values(p)[0].count }</strong>
+                            <span>
+                                {Object.values(p)[0].name}
+                                {Object.values(p)[0].subtitle && (
+                                    <small className="ms-1">{Object.values(p)[0].subtitle}</small>
+                                )}
+                            </span>
+                            <div className="ms-auto">
+                                {setDigitFormat(Object.values(p)[0].total) }
+                            </div>
+                        </div>
+                    ))}
                 </div>
             </div>
         </div>

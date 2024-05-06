@@ -3,6 +3,7 @@ import Layout from "./pages/Layout"
 import Home from "./pages/Home";
 import Register from "./pages/Register"
 import Dashboard from "./pages/Dashboard"
+import ProductsList from "./pages/ProductsList"
 import './App.css';
 
 export default function App() {
@@ -13,6 +14,7 @@ export default function App() {
                     <Route index element={<Home />} />
                     <Route path="dashboard" element={<Dashboard />} />
                     <Route path="register" element={<Register />} />
+                    <Route path="productsList" element={<ProductsList /> } />
                 </Route>
             </Routes>
         </BrowserRouter>

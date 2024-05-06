@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { BsReceipt } from 'react-icons/bs';
 import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css'
-import { BARCODE_LENGTH } from "../constants";
 import axios from 'axios';
 import './Home.css';
 
@@ -11,24 +10,34 @@ const Home = () => {
     const [payment, setPayment] = useState();
     const [change, setChange] = useState(0);
     const [purchases, setPurchases] = useState([]);
-    const [products, setProducts] = useState([]);
     const [searchText, setSearchText] = useState('');
     const [confirmDelete, setConfirmDelete] = useState(false);
+    const [searchedProduct, setSearchedProduct] = useState();
 
     useEffect(() => {
-        axios.get('https://localhost:7170/API/Product')
+        if (searchText.length <= 0) return setSearchedProduct(null);
+
+        axios.get(`https://localhost:7170/API/Product/Search/${searchText}`)
             .then(response => {
-                setProducts(response.data);
+                setSearchedProduct(response.data);
+            })
+            .catch(() => {
+                setSearchedProduct(null);
             });
-    }, [])
+    }, [searchText]);
+
+    useEffect(() => {
+        setConfirmDelete(false);
+    }, [purchases, searchText, payment, barcode]);
+
+    useEffect(() => {
+        setChange(payment - getTotal());
+    }, [payment, barcode]);
 
     const handlePaymentChange = (event) => {
         const newPayment = parseFloat(event.target.value);
         if (newPayment > 99999) return;
         setPayment(newPayment);
-        setChange(newPayment - getTotal());
-
-        setConfirmDelete(false);
     }
 
     const setDigitFormat = (value) => {
@@ -39,20 +48,11 @@ const Home = () => {
         const newBarcode = event.target.value;
         setBarcode(newBarcode);
 
-        if (newBarcode.length < BARCODE_LENGTH) return;
-
-        const existingIndex = products.findIndex(item => item.id == newBarcode);
-
-        if (existingIndex !== -1) {
-            addPurchase(products[existingIndex])
-        } else {
-            console.log('No such item');
-            toast.error('This item is not registered.');
-        }
-
-        setChange(payment - getTotal());
-        setBarcode('');
-        setConfirmDelete(false);
+        axios.get(`https://localhost:7170/API/Product/${newBarcode}`)
+            .then(response => {
+                addPurchase(response.data);
+                setBarcode('');
+            });
     }
 
     const addPurchase = (purchase) => {
@@ -65,7 +65,6 @@ const Home = () => {
         } else {
             setPurchases(prevList => [...prevList, { name: purchase.name, count: 1, price: purchase.price, subtitle: purchase.subtitle, id: purchase.id }]);
         }
-        setConfirmDelete(false);
     }
 
     const handlePurchaseCountChange = (id, event) => {
@@ -77,7 +76,6 @@ const Home = () => {
             setPurchases(updatedList);
         }
         console.log(event.target.value);
-        setConfirmDelete(false);
     }
 
     const handlePurchaseConfirmed = (id, event) => {
@@ -93,32 +91,15 @@ const Home = () => {
                 setPurchases(updatedList);
             }
         }
-        setConfirmDelete(false);
     }
 
     const getTotal = () => {
         return purchases.reduce((total, item) => total + item.count * item.price, 0);
     }
 
-    const applySearchText = () => {
-        if (searchText.length <= 0) return products;
-
-        const searchTextLower = searchText.toLowerCase();
-
-        return products.filter(product => {
-            return (
-                product.id.startsWith(searchTextLower) ||
-                product.id.endsWith(searchTextLower) ||
-                product.name.toLowerCase().includes(searchTextLower) ||
-                product.subtitle.toLowerCase().includes(searchTextLower)
-            );
-        });
-    }
-
     const handleSearchTextChanged = (event) => {
         const value = event.target.value;
         setSearchText(value);
-        setConfirmDelete(false);
     }
 
     const getProductTotal = (id) => {
@@ -135,7 +116,7 @@ const Home = () => {
     const clearPurchases = (event) => {
         if (confirmDelete === true) {
             setPurchases([]);
-            setConfirmDelete(false);
+            setPayment('');
         } else {
             setConfirmDelete(true);
         }
@@ -154,6 +135,7 @@ const Home = () => {
 
             toast.success('Earned Php ' + setDigitFormat(getTotal()));
             setPurchases([]);
+            setPayment('');
         } catch (error) {
             console.log(error);
 
@@ -162,7 +144,7 @@ const Home = () => {
     }
 
     return (
-        <div className="row p-4">
+        <div className="row p-4 topdiv">
         <ToastContainer />
             <div className="p-3 pt-0 col-9 d-flex flex-column justify-content-top align-items-center">
                 <div className="cashier row">
@@ -211,15 +193,16 @@ const Home = () => {
             </div>
             <div className="col-3 quickview">
                 <div>
-                    <input type="text" value={searchText} onChange={handleSearchTextChanged} className="form-control mb-4" placeholder="Search an item or scan barcode..."></input>
+                    <input type="text" value={searchText} onChange={handleSearchTextChanged} onMouseDown={() => setSearchText('') } className="form-control mb-4" placeholder="Search an item or scan barcode..."></input>
                     <div className="p-2">
-                        {products && applySearchText().map((product, index) => (
-                            <div key={product.id} className="d-flex flex-row mb-2">
-                                <span className="me-2 d-flex flex-row"><div className="me-1 pname">{product.name}</div><small className="st">{product.subtitle}</small></span>
-                                <span>@ { setDigitFormat(product.price) }</span>
-                                <button onClick={handleTap} value={product.id } className="btn btn-outline-primary ms-auto">Add</button>
+                        {searchedProduct && searchedProduct.map(p => (
+                            <div className="d-flex flex-column mb-3" key={p.id }>
+                                <span className="me-2">{p.name}</span>
+                                <small className="st">{p.subtitle}</small>
+                                <span>Price: {setDigitFormat(p.price) }</span>
+                                <button onClick={handleTap} value={p.id } className="btn btn-outline-primary mt-3">Add</button>
                             </div>
-                        )) }
+                        ))}
                     </div>
                 </div>
             </div>

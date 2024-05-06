@@ -85,12 +85,13 @@ public class PurchaseController : ControllerBase
     [HttpGet("Summary/{to}")]
     public IActionResult GetSummary(DateTime to)
     {
-        var sales = _unitOfWork.Sales.GetAll(s => s.DateOfPurchase.Date <= to.Date);
+        var sales = _unitOfWork.Sales.GetAll(s => s.DateOfPurchase.Date == to.Date);
 
         var summary = new SaleSummary
         {
             DailyAverage = 0,
-            SaleForTheDay = 0
+            SaleForTheDay = 0,
+            ProductSales = new Dictionary<string, ProductSale>()
         };
 
         if (!sales.Any()) return Ok(summary);
@@ -113,14 +114,25 @@ public class PurchaseController : ControllerBase
                 {
                     saleForTheDay += purchaseTotal;
                 }
+
+                if (!summary.ProductSales.ContainsKey(purchase.ProductId))
+                {
+                    summary.ProductSales.Add(purchase.ProductId, new ProductSale
+                    {
+                        Name = purchase.Product.Name,
+                        Subtitle = purchase.Product.Subtitle,
+                        Count = 0,
+                        Total = 0
+                    });
+                }
+
+                summary.ProductSales[purchase.ProductId].Count += purchase.Count;
+                summary.ProductSales[purchase.ProductId].Total += purchaseTotal;
             }
         }
 
-        summary = new SaleSummary
-        {
-            DailyAverage = total / noOfDays,
-            SaleForTheDay = saleForTheDay
-        };
+        summary.DailyAverage = total / noOfDays;
+        summary.SaleForTheDay = saleForTheDay;
 
         return Ok(summary);
     }

@@ -17,6 +17,22 @@
     border-radius: 1rem;
 }
 
+.topdiv {
+    overflow-y: auto;
+}
+
+.dashboard-wide {
+    width:700px;
+}
+
+.pt {
+    min-width: 40px;
+}
+
+.purchase-list {
+    overflow-y: auto;
+}
+
 .dateinput {
     width: 150px!important;
 }

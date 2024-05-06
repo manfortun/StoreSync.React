@@ -131,7 +131,7 @@ const Home = () => {
         }));
 
         try {
-            const response = await axios.post('https://localhost:7170/API/Purchase', { purchases: newSalesData });
+            await axios.post('https://localhost:7170/API/Purchase', { purchases: newSalesData });
 
             toast.success('Earned Php ' + setDigitFormat(getTotal()));
             setPurchases([]);

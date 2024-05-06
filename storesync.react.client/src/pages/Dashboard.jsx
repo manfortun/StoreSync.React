@@ -34,8 +34,8 @@ const Dashboard = () => {
 
     const weeklyLineGraph = () => {
         const date = new Date();
-        const startDate = new Date(date.setDate(selectedDate.getDate() - 6)).toISOString();
-        const endDate = selectedDate.toISOString();
+        const startDate = new Date(date.setDate(selectedDate.getDate() - 6)).toLocaleString('sv');
+        const endDate = selectedDate.toLocaleString('sv');
 
         axios.get(`https://localhost:7170/API/Purchase/${startDate}~${endDate}`)
             .then(response => {
@@ -154,29 +154,29 @@ const Dashboard = () => {
                         <strong>Total Sales</strong>
                     </div>
                     {summary && (
-                        <>
-                            <div className="d-flex flex-row w-100 mb-4 mt-3">
-                                <span className="me-2">
-                                    Php
-                                </span>
-                                <h3>
-                                    {setDigitFormat(summary.saleForTheDay)}
-                                </h3>
-                            </div>
-                            <div className="d-flex flex-row w-100">
-                                <span>
-                                    Daily Average
-                                </span>
-                                <span className="ms-auto">
-                                    <small className="me-1">Php</small>
-                                    {setDigitFormat(summary.dailyAverage)}
-                                </span>
-                            </div>
-                        </>
+                        <div className="d-flex flex-row w-100 mb-1 mt-3">
+                            <span className="me-2">
+                                Php
+                            </span>
+                            <h3>
+                                {setDigitFormat(summary.saleForTheDay)}
+                            </h3>
+                        </div>
                     )}
-                    <div className="mt-5">
+                    <div className="mt-3">
                         {graphData && graphData.sales && (
-                            <Line data={chartData()} options={optionss} />
+                            <>
+                                <div className="d-flex flex-row w-100">
+                                    <span>
+                                        Daily Average
+                                    </span>
+                                    <span className="ms-auto">
+                                        <small className="me-1">Php</small>
+                                        {setDigitFormat(graphData.average)}
+                                    </span>
+                                </div>
+                                <Line data={chartData()} options={optionss} className="mt-5"/>
+                            </>
                         )}
                     </div>
                 </div>
@@ -201,8 +201,8 @@ const Dashboard = () => {
                     </div>
                 </div>
             </div>
-            <div className="dashboard dashboard-wide mt-2">
-                <div className="d-flex flex-column w-100 purchase-list">
+            <div className="dashboard dashboard-wide mt-2 h-100">
+                <div className="d-flex flex-column w-100 purchase-list pb-3">
                     <strong className="mb-4">Purchases</strong>
                     {getProductsList().map(p => (
                         <div key={Object.keys(p)[0]} className="d-flex flex-row">

@@ -8,10 +8,6 @@
     min-height: 500px;
 }
 
-.topdiv {
-    overflow-y: auto;
-}
-
 small {
     color: rgb(150, 150, 150);
     font-style: italic;

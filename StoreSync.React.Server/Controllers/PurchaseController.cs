@@ -60,7 +60,8 @@ public class PurchaseController : ControllerBase
 
         var salesRangeRead = new SalesRangeRead
         {
-            Sales = new Dictionary<DateTime, double>()
+            Sales = new Dictionary<DateTime, double>(),
+            Average = 0
         };
 
         DateTime currentDate = from.Date;
@@ -77,8 +78,12 @@ public class PurchaseController : ControllerBase
             {
                 double price = _unitOfWork.Prices.Get(purchase.ProductId, dateOfSale)?.Value ?? 0;
                 salesRangeRead.Sales[dateOfSale.Date] += purchase.Count * price;
+                salesRangeRead.Average += purchase.Count * price;
             }
         }
+
+        salesRangeRead.Average /= (to.Date - from.Date).TotalDays + 1;
+
         return Ok(salesRangeRead);
     }
 
@@ -89,17 +94,12 @@ public class PurchaseController : ControllerBase
 
         var summary = new SaleSummary
         {
-            DailyAverage = 0,
             SaleForTheDay = 0,
             ProductSales = new Dictionary<string, ProductSale>()
         };
 
         if (!sales.Any()) return Ok(summary);
 
-        DateTime startTime = sales.Min(s => s.DateOfPurchase.Date);
-        int noOfDays = Math.Max((to.Date - startTime.Date).Days, 1);
-
-        double total = 0;
         double saleForTheDay = 0;
 
         foreach (var sale in sales)
@@ -108,7 +108,6 @@ public class PurchaseController : ControllerBase
             {
                 double price = _unitOfWork.Prices.Get(purchase.ProductId, sale.DateOfPurchase)?.Value ?? 0;
                 double purchaseTotal = purchase.Count * price;
-                total += purchaseTotal;
 
                 if (sale.DateOfPurchase.Date == to.Date)
                 {
@@ -131,7 +130,6 @@ public class PurchaseController : ControllerBase
             }
         }
 
-        summary.DailyAverage = total / noOfDays;
         summary.SaleForTheDay = saleForTheDay;
 
         return Ok(summary);

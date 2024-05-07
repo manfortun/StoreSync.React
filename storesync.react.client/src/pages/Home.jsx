@@ -4,7 +4,8 @@ import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css'
 import axios from 'axios';
 import './Home.css';
-import { BASE_URL } from '../../utils/constants'; 
+import { BASE_URL } from '../../utils/constants';
+import DebtorModal from '../modals/SelectDebtorModal';
 
 const Home = () => {
     const [barcode, setBarcode] = useState('');
@@ -14,6 +15,8 @@ const Home = () => {
     const [searchText, setSearchText] = useState('');
     const [confirmDelete, setConfirmDelete] = useState(false);
     const [searchedProduct, setSearchedProduct] = useState();
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [debtor, setDebtor] = useState('');
 
     useEffect(() => {
         if (searchText.length <= 0) return setSearchedProduct(null);
@@ -29,11 +32,15 @@ const Home = () => {
 
     useEffect(() => {
         setConfirmDelete(false);
+        setDebtor('');
     }, [purchases, searchText, payment, barcode]);
 
     useEffect(() => {
         setChange(payment - getTotal());
     }, [payment, barcode]);
+
+    const openModal = () => setIsModalOpen(true);
+    const closeModal = () => setIsModalOpen(false);
 
     const handlePaymentChange = (event) => {
         const newPayment = parseFloat(event.target.value);
@@ -144,9 +151,44 @@ const Home = () => {
         }
     }
 
+    const handleDebtPurchase = async (event) => {
+        event.preventDefault();
+
+        if (debtor.length < 1) {
+            setIsModalOpen(true);
+        } else {
+            const newSalesData = purchases.map((purchase) => ({
+                productid: purchase.id,
+                count: purchase.count
+            }));
+
+            try {
+                await axios.post(`${BASE_URL}/Debt`, {
+                    debtorName: debtor,
+                    debt: { purchases: newSalesData }
+                });
+                toast.success('Debt was charged successfully.');
+                setPurchases([]);
+                setPayment('');
+            } catch (error) {
+                console.log(error);
+
+                toast.error('Something went wrong. Contact administrator');
+            }
+        }
+    }
+
+    const onDebtorSelected = (debtorName) => {
+        if (debtorName.length < 1) return;
+
+        setIsModalOpen(false);
+        setDebtor(debtorName);
+    }
+
     return (
         <div className="d-flex flex-column flex-lg-row p-4 topdiv mb-5">
             <ToastContainer />
+            <DebtorModal isOpen={isModalOpen} onClose={closeModal} onDebtorSelected={onDebtorSelected} />
             <div className="pb-3 pe-lg-3 pt-0 col-lg-9 d-lg-flex flex-column justify-content-top align-items-center">
                 <div className="cashier d-flex flex-lg-row flex-column">
                     <div className="mb-2 me-lg-4 d-flex flex-column col">
@@ -185,8 +227,15 @@ const Home = () => {
                         </div>
                         {purchases.length > 0 && (
                             <div className="d-flex flex-row mt-auto">
-                                <button className="btn btn-sm btn-outline-danger w-100 me-1" onClick={(event) => clearPurchases(event) }>{ confirmDelete ? "Click to confirm" : "Delete" }</button>
-                                <button className="btn btn-sm btn-primary w-100" onClick={(event) => handleSavePurchases(event) }>Save</button>
+                                <button className="btn btn-sm btn-outline-danger w-100 me-1" onClick={(event) => clearPurchases(event)}>{confirmDelete ? "Click to confirm" : "Delete"}</button>
+                                <button className="btn btn-sm btn-outline-warning w-100 me-1" onClick={handleDebtPurchase }>
+                                    {debtor.length < 1 ? (
+                                        `Set as debt`
+                                    ) : (
+                                        `Debt to ${debtor}`
+                                    )}
+                                </button>
+                                <button className="btn btn-sm btn-primary w-100" onClick={(event) => handleSavePurchases(event) }>Charge</button>
                             </div>
                         )}
                     </div>

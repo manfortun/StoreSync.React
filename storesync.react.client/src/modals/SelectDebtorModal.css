@@ -1,0 +1,8 @@
+.custom-modal {
+    width: 50%;
+    height: 50%;
+    background-color: white;
+    overflow-y: auto;
+    padding: 1rem;
+    border-radius: 1rem;
+}

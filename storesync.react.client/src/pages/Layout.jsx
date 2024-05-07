@@ -1,4 +1,4 @@
-import { Outlet, Link } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 import { BsFillHouseFill } from 'react-icons/bs';
 import "./Layout.css"
 
@@ -14,6 +14,7 @@ const Layout = () => {
                     <a className="hover" href="/dashboard">Dashboard</a>
                     <a className="hover" href="/productsList">Products</a>
                     <a className="hover" href="/register">Register</a>
+                    <a className="hover" href="/debtsList">Debts</a>
                 </div>
             </div>
 

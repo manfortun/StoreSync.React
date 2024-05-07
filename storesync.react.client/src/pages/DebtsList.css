@@ -1,0 +1,19 @@
+.top-div {
+    overflow-y: auto;
+    width: 450px;
+}
+
+.top-div::-webkit-scrollbar {
+    width: 0px;
+}
+
+.record {
+    background-color: rgb(240, 240, 240);
+    padding: 1rem;
+    margin-top: 1rem;
+    border-radius: 1rem;
+}
+
+.count {
+    min-width: 30px;
+}

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using StoreSync.React.Server.DataAccess;
 
@@ -11,9 +12,11 @@ using StoreSync.React.Server.DataAccess;
 namespace StoreSync.React.Server.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240507041150_ChangeFK")]
+    partial class ChangeFK
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -28,7 +31,6 @@ namespace StoreSync.React.Server.Migrations
             modelBuilder.Entity("StoreSync.React.Server.Models.Debt", b =>
                 {
                     b.Property<string>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime>("DateCreated")
@@ -48,7 +50,6 @@ namespace StoreSync.React.Server.Migrations
             modelBuilder.Entity("StoreSync.React.Server.Models.DebtPayment", b =>
                 {
                     b.Property<string>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime>("DateCreated")
@@ -70,7 +71,7 @@ namespace StoreSync.React.Server.Migrations
 
                     b.HasIndex("DebtorName");
 
-                    b.ToTable("DebtPayments");
+                    b.ToTable("DebtsPayment");
                 });
 
             modelBuilder.Entity("StoreSync.React.Server.Models.Debtor", b =>

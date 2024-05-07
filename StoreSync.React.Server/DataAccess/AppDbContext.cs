@@ -9,6 +9,10 @@ public class AppDbContext : DbContext
     public DbSet<Price> Prices { get; set; }
     public DbSet<Purchase> Purchases { get; set; }
     public DbSet<Sale> Sales { get; set; }
+    public DbSet<Debtor> Debtors { get; set; }
+    public DbSet<Debt> Debts { get; set; }
+    public DbSet<DebtPayment> DebtPayments { get; set; }
+
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -40,14 +44,30 @@ public class AppDbContext : DbContext
             .WithMany(p => p.Purchases)
             .HasForeignKey(p => p.ProductId);
 
-        modelBuilder.Entity<Product>().HasData(
-            new Product { Id = "4902430453295", Name = "Downy", Subtitle = "Garden Bloom", IsDeleted = false },
-            new Product { Id = "7622300637996", Name = "Tang", Subtitle = "Grapes", IsDeleted = false },
-            new Product { Id = "4800361410816", Name = "Bear Brand", Subtitle = "Swak", IsDeleted = false });
+        modelBuilder.Entity<Debtor>()
+            .HasKey(d => d.Name);
 
-        modelBuilder.Entity<Price>().HasData(
-            new Price { Id = "4902430453295", DateCreated = DateTime.Now, Value = 8.00d },
-            new Price { Id = "7622300637996", DateCreated = DateTime.Now, Value = 22.00d },
-            new Price { Id = "4800361410816", DateCreated = DateTime.Now, Value = 13.00d });
+        modelBuilder.Entity<Debt>()
+            .HasOne(d => d.Debtor)
+            .WithMany(d => d.Debts)
+            .HasForeignKey(d => d.DebtorName);
+
+        modelBuilder.Entity<Debt>()
+            .Property(d => d.Id)
+            .ValueGeneratedOnAdd();
+
+        modelBuilder.Entity<DebtPayment>()
+            .HasOne(d => d.Debtor)
+            .WithMany(d => d.Payments)
+            .HasForeignKey(d => d.DebtorName);
+
+        modelBuilder.Entity<DebtPayment>()
+            .Property(d => d.Id)
+            .ValueGeneratedOnAdd();
+
+        modelBuilder.Entity<Sale>()
+            .HasOne(s => s.Debt)
+            .WithMany(d => d.Sales)
+            .HasForeignKey(s => s.DebtId);
     }
 }

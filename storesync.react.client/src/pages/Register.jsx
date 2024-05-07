@@ -13,7 +13,7 @@ const Register = () => {
         id: '',
         name: '',
         subtitle: '',
-        price: 0
+        price: ''
     });
 
     const handleBarcodeChange = (event) => {
@@ -35,7 +35,7 @@ const Register = () => {
                             id: value,
                             name: '',
                             subtitle: '',
-                            price: 0
+                            price: ''
                         });
                         setUpdate(false);
                     }
@@ -88,7 +88,7 @@ const Register = () => {
                     id: '',
                     name: '',
                     subtitle: '',
-                    price: 0
+                    price: ''
                 });
                 setUpdate(false);
             })
@@ -108,7 +108,7 @@ const Register = () => {
                     id: '',
                     name: '',
                     subtitle: '',
-                    price: 0
+                    price: ''
                 });
                 setUpdate(false);
             })
@@ -124,7 +124,7 @@ const Register = () => {
                 id: '',
                 name: '',
                 subtitle: '',
-                price: 0
+                price: ''
             });
 
             setConfirmDelete(false);

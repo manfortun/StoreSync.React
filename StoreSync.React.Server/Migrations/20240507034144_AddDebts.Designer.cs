@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using StoreSync.React.Server.DataAccess;
 
@@ -11,9 +12,11 @@ using StoreSync.React.Server.DataAccess;
 namespace StoreSync.React.Server.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240507034144_AddDebts")]
+    partial class AddDebts
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -28,11 +31,7 @@ namespace StoreSync.React.Server.Migrations
             modelBuilder.Entity("StoreSync.React.Server.Models.Debt", b =>
                 {
                     b.Property<string>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("nvarchar(450)");
-
-                    b.Property<DateTime>("DateCreated")
-                        .HasColumnType("datetime2");
 
                     b.Property<string>("DebtorName")
                         .IsRequired()
@@ -42,22 +41,18 @@ namespace StoreSync.React.Server.Migrations
 
                     b.HasIndex("DebtorName");
 
-                    b.ToTable("Debts");
+                    b.ToTable("Debt");
                 });
 
             modelBuilder.Entity("StoreSync.React.Server.Models.DebtPayment", b =>
                 {
                     b.Property<string>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime>("DateCreated")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("DebtId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("DebtorName")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
@@ -68,9 +63,7 @@ namespace StoreSync.React.Server.Migrations
 
                     b.HasIndex("DebtId");
 
-                    b.HasIndex("DebtorName");
-
-                    b.ToTable("DebtPayments");
+                    b.ToTable("DebtPayment");
                 });
 
             modelBuilder.Entity("StoreSync.React.Server.Models.Debtor", b =>
@@ -80,7 +73,7 @@ namespace StoreSync.React.Server.Migrations
 
                     b.HasKey("Name");
 
-                    b.ToTable("Debtors");
+                    b.ToTable("Debtor");
                 });
 
             modelBuilder.Entity("StoreSync.React.Server.Models.Price", b =>
@@ -169,17 +162,13 @@ namespace StoreSync.React.Server.Migrations
 
             modelBuilder.Entity("StoreSync.React.Server.Models.DebtPayment", b =>
                 {
-                    b.HasOne("StoreSync.React.Server.Models.Debt", null)
+                    b.HasOne("StoreSync.React.Server.Models.Debt", "Debt")
                         .WithMany("Payments")
-                        .HasForeignKey("DebtId");
-
-                    b.HasOne("StoreSync.React.Server.Models.Debtor", "Debtor")
-                        .WithMany("Payments")
-                        .HasForeignKey("DebtorName")
+                        .HasForeignKey("DebtId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Debtor");
+                    b.Navigation("Debt");
                 });
 
             modelBuilder.Entity("StoreSync.React.Server.Models.Price", b =>
@@ -214,11 +203,9 @@ namespace StoreSync.React.Server.Migrations
 
             modelBuilder.Entity("StoreSync.React.Server.Models.Sale", b =>
                 {
-                    b.HasOne("StoreSync.React.Server.Models.Debt", "Debt")
+                    b.HasOne("StoreSync.React.Server.Models.Debt", null)
                         .WithMany("Sales")
                         .HasForeignKey("DebtId");
-
-                    b.Navigation("Debt");
                 });
 
             modelBuilder.Entity("StoreSync.React.Server.Models.Debt", b =>
@@ -231,8 +218,6 @@ namespace StoreSync.React.Server.Migrations
             modelBuilder.Entity("StoreSync.React.Server.Models.Debtor", b =>
                 {
                     b.Navigation("Debts");
-
-                    b.Navigation("Payments");
                 });
 
             modelBuilder.Entity("StoreSync.React.Server.Models.Product", b =>

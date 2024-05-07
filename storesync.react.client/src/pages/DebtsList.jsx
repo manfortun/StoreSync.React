@@ -157,7 +157,7 @@ const DebtsList = () => {
     }
 
     return (
-        <div className="d-flex flex-column justify-content-center align-items-center mb-5 topdiv">
+        <div className="d-flex flex-column justify-content-center align-items-center ps-2 pe-2 mb-5 topdiv">
             <ToastContainer />
             <div className="top-div mt-4">
                 {debtors && (

@@ -145,7 +145,7 @@ const Home = () => {
     }
 
     return (
-        <div className="d-flex flex-column flex-lg-row p-4 topdiv">
+        <div className="d-flex flex-column flex-lg-row p-4 topdiv mb-5">
             <ToastContainer />
             <div className="pb-3 pe-lg-3 pt-0 col-lg-9 d-lg-flex flex-column justify-content-top align-items-center">
                 <div className="cashier d-flex flex-lg-row flex-column">

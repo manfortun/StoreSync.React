@@ -90,6 +90,7 @@ const Register = () => {
                     subtitle: '',
                     price: 0
                 });
+                setUpdate(false);
             })
             .catch(error => {
                 toast.error('Unable to save product. Contact administrator.');
@@ -109,6 +110,7 @@ const Register = () => {
                     subtitle: '',
                     price: 0
                 });
+                setUpdate(false);
             })
             .catch(error => {
                 toast.error('Unable to update product. Contact administrator.');
@@ -132,7 +134,7 @@ const Register = () => {
     }
 
     return (
-        <div className="d-flex flex-column justify-content-center align-items-center p-5">
+        <div className="d-flex flex-column justify-content-center align-items-center p-5 mb-5">
         <ToastContainer />
             <div className="main-div">
                 <div className="form-floating mb-3">

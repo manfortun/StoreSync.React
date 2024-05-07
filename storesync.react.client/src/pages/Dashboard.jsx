@@ -140,7 +140,7 @@ const Dashboard = () => {
         }
     };
     return (
-        <div className="d-flex flex-column justify-md-content-center align-items-center topdiv">
+        <div className="d-flex flex-column justify-md-content-center align-items-center topdiv mb-5">
             <div className="dashboard-wide mt-3 d-flex flex-row">
                 <div className="ms-auto">
                     <span className="me-1">Select date:</span>

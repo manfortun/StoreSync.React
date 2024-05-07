@@ -44,7 +44,7 @@ const ProductsList = () => {
     }
 
     return (
-        <div className="row p-4 d-flex flex-column justify-content-center align-items-center">
+        <div className="row p-4 d-flex flex-column justify-content-center align-items-center mb-5">
             <ToastContainer />
             <div className="product-list-div">
                 <h3 className="mb-3">Products List</h3>

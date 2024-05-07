@@ -4,6 +4,7 @@ import axios from 'axios'
 import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css'
 import { BsUpcScan } from 'react-icons/bs';
+import { BASE_URL } from '../../utils/constants'; 
 
 const Register = () => {
     const [update, setUpdate] = useState(false);
@@ -22,7 +23,7 @@ const Register = () => {
         setUpdate(false);
 
         if (value.length > 0) {
-            axios.get('https://localhost:7170/API/Product/' + value)
+            axios.get(`${BASE_URL}/Product/${value}`)
                 .then((response) => {
                     setProduct(response.data);
                     setUpdate(true);
@@ -80,7 +81,7 @@ const Register = () => {
     const createNew = async (event) => {
         event.preventDefault();
 
-        await axios.post('https://localhost:7170/API/Product', product)
+        await axios.post(`${BASE_URL}/Product`, product)
             .then(response => {
                 toast.success('Product saved!');
                 setProduct({
@@ -99,7 +100,7 @@ const Register = () => {
     const updateExisting = async (event) => {
         event.preventDefault();
 
-        await axios.patch('https://localhost:7170/API/Product', product)
+        await axios.patch(`${BASE_URL}/Product`, product)
             .then(response => {
                 toast.success('Product updated!');
                 setProduct({

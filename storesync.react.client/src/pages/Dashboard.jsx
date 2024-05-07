@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import 'chart.js/auto';
-import { Doughnut, Line } from 'react-chartjs-2';
+import { Line } from 'react-chartjs-2';
 import axios from 'axios';
-import randomColor from 'randomcolor';
 import './Dashboard.css'
+import { BASE_URL } from '../../utils/constants'; 
 
 const Dashboard = () => {
     const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thur', 'Fri', 'Sat'];
@@ -17,9 +17,9 @@ const Dashboard = () => {
     }, [selectedDate]);
 
     const getSaleSummary = () => {
-        const formattedDate = selectedDate.toISOString();
+        const formattedDate = selectedDate.toLocaleString('sv');
 
-        axios.get(`https://localhost:7170/API/Purchase/Summary/${formattedDate}`)
+        axios.get(`${BASE_URL}/Purchase/Summary/${formattedDate}`)
             .then(response => {
                 setSummary(response.data);
             })
@@ -37,7 +37,7 @@ const Dashboard = () => {
         const startDate = new Date(date.setDate(selectedDate.getDate() - 6)).toLocaleString('sv');
         const endDate = selectedDate.toLocaleString('sv');
 
-        axios.get(`https://localhost:7170/API/Purchase/${startDate}~${endDate}`)
+        axios.get(`${BASE_URL}/Purchase/${startDate}~${endDate}`)
             .then(response => {
                 setGraphData(response.data);
             });
@@ -145,7 +145,7 @@ const Dashboard = () => {
                 <div className="ms-auto">
                     <span className="me-1">Select date:</span>
                     <small>(DD/MM/YYYY)</small>
-                    <input type="date" className="form-control ms-auto dateinput" value={selectedDate.toISOString().split('T')[0]} onChange={handleDateChange} />
+                    <input type="date" className="form-control ms-auto dateinput" value={selectedDate.toLocaleString('sv').split(' ')[0]} onChange={handleDateChange} />
                 </div>
             </div>
             <div className="d-flex flex-md-row flex-column justify-content-center align-items-center pt-3">

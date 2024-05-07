@@ -4,13 +4,14 @@ import './ProductsList.css'
 import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css'
 import { BsCopy } from 'react-icons/bs';
+import { BASE_URL } from '../../utils/constants'; 
 
 const ProductsList = () => {
     const [products, setProducts] = useState([]);
     const [searchString, setSearchString] = useState('');
 
     useEffect(() => {
-        axios.get('https://localhost:7170/API/Product')
+        axios.get(`${BASE_URL}/Product`)
             .then(response => {
                 setProducts(response.data);
             });
@@ -61,7 +62,7 @@ const ProductsList = () => {
                                 </tr>
                             </thead>
                             <tbody>
-                                {applySearchString().map(product => (
+                                {products && products.length > 0 && applySearchString().map(product => (
                                     <tr key={product.id}>
                                         <td><button className="btn btn-sm" title="Copy barcode" onClick={(event) => copyToClipboard(product.id) }><BsCopy /></button></td>
                                         <td>{product.id}</td>

@@ -4,6 +4,7 @@ import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css'
 import axios from 'axios';
 import './Home.css';
+import { BASE_URL } from '../../utils/constants'; 
 
 const Home = () => {
     const [barcode, setBarcode] = useState('');
@@ -17,7 +18,7 @@ const Home = () => {
     useEffect(() => {
         if (searchText.length <= 0) return setSearchedProduct(null);
 
-        axios.get(`https://localhost:7170/API/Product/Search/${searchText}`)
+        axios.get(`${BASE_URL}/Product/Search/${searchText}`)
             .then(response => {
                 setSearchedProduct(response.data);
             })
@@ -48,7 +49,7 @@ const Home = () => {
         const newBarcode = event.target.value;
         setBarcode(newBarcode);
 
-        axios.get(`https://localhost:7170/API/Product/${newBarcode}`)
+        axios.get(`${BASE_URL}/Product/${newBarcode}`)
             .then(response => {
                 addPurchase(response.data);
                 setBarcode('');
@@ -131,7 +132,7 @@ const Home = () => {
         }));
 
         try {
-            await axios.post('https://localhost:7170/API/Purchase', { purchases: newSalesData });
+            await axios.post(`${BASE_URL}/API/Purchase`, { purchases: newSalesData });
 
             toast.success('Earned Php ' + setDigitFormat(getTotal()));
             setPurchases([]);

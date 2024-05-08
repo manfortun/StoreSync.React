@@ -55,7 +55,7 @@ public class PurchaseController : ControllerBase
     [HttpGet("{from}~{to}")]
     public IActionResult GetSalesRange(DateTime from, DateTime to)
     {
-        var sales = _unitOfWork.Sales.GetAll(s => (s.DateOfPurchase.Date >= from.Date && s.DateOfPurchase.Date <= to.Date) || !string.Empty(s.DebtId));
+        var sales = _unitOfWork.Sales.GetAll(s => (s.DateOfPurchase.Date >= from.Date && s.DateOfPurchase.Date <= to.Date) || !string.IsNullOrEmpty(s.DebtId));
         var payments = _unitOfWork.DebtPayments.GetAll(s => s.DateCreated.Date <= to.Date);
 
         var salesRangeRead = new SalesRangeRead

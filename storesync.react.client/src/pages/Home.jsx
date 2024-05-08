@@ -285,28 +285,26 @@ const Home = () => {
             </div>
             <div className="col-lg-3 quickview">
                 <div>
-                    <input type="text" value={searchText} onChange={handleSearchTextChanged} onMouseDown={() => setSearchText('') } className="form-control mb-4" placeholder="Search an item or scan barcode..."></input>
-                    <div className="p-2">
-                        {searchedProduct && searchedProduct.map(p => (
-                            <div className="d-flex flex-column mb-3 search-item" key={p.id}>
-                                <div className="d-flex flex-row">
-                                    <div className="d-flex flex-column">
-                                        <strong>{p.name}</strong>
-                                        <small className="st">{p.subtitle}</small>
-                                    </div>
-                                    <div className="ms-auto d-flex flex-row">
-                                        <small className="st me-1">
-                                            Php
-                                        </small>
-                                        <h5>
-                                            {setDigitFormat(p.price)}
-                                        </h5>
-                                    </div>
+                    <input type="text" value={searchText} onChange={handleSearchTextChanged} onMouseDown={() => setSearchText('')} className="form-control" placeholder="Search an item or scan barcode..."></input>
+                    {searchedProduct && searchedProduct.map(p => (
+                        <div className="d-flex flex-column search-item mt-3" key={p.id}>
+                            <div className="d-flex flex-row">
+                                <div className="d-flex flex-column">
+                                    <strong>{p.name}</strong>
+                                    <small className="st">{p.subtitle}</small>
                                 </div>
-                                <button onClick={handleTap} value={p.id } className="btn btn-outline-primary mt-3">Add</button>
+                                <div className="ms-auto d-flex flex-row">
+                                    <small className="st me-1">
+                                        Php
+                                    </small>
+                                    <h5>
+                                        {setDigitFormat(p.price)}
+                                    </h5>
+                                </div>
                             </div>
-                        ))}
-                    </div>
+                            <button onClick={handleTap} value={p.id } className="btn btn-outline-primary mt-3">Add</button>
+                        </div>
+                    ))}
                 </div>
             </div>
         </div>

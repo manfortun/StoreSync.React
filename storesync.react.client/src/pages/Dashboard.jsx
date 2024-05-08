@@ -262,7 +262,7 @@ const Dashboard = () => {
                 </div>
             </div>
             <div className="dashboard dashboard-wide mt-2 h-100 mb-5">
-                <div className="d-flex flex-column w-100 purchase-list pb-3">
+                <div className="d-flex flex-column w-100 pb-3">
                     <div className="d-flex flex-row mb-4 align-items-center">
                         <BsListOl className="me-2" />
                         <strong>Purchases</strong>

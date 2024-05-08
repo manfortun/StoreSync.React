@@ -88,6 +88,10 @@ input::-webkit-inner-spin-button {
     margin-top: 3px;
 }
 
+.search-div {
+    transition: all 3s ease-in-out;
+}
+
 .search-item {
     animation-name: reveal;
     animation-duration: 0.5s;

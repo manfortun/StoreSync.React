@@ -93,7 +93,9 @@ public class ProductController : ControllerBase
 
             searchedProducts = matchingProducts
                 .Where(mp => mp.MatchScore == searchString.Length)
-                .OrderByDescending(mp => mp.Product.Name.ToLower().Contains(searchString))
+                .OrderByDescending(mp => mp.Product.Name.ToLower().StartsWith(searchString))
+                .ThenByDescending(mp => !string.IsNullOrEmpty(mp.Product.Subtitle) && mp.Product.Subtitle.ToLower().StartsWith(searchString))
+                .ThenByDescending(mp => mp.Product.Name.ToLower().Contains(searchString))
                 .ThenByDescending(mp => !string.IsNullOrEmpty(mp.Product.Subtitle) && mp.Product.Subtitle.ToLower().Contains(searchString))
                 .ThenByDescending(mp => mp.MatchScore)
                 .Select(mp => mp.Product);

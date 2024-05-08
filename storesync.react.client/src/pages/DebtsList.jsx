@@ -170,78 +170,84 @@ const DebtsList = () => {
     return (
         <div className="d-flex flex-column justify-content-center align-items-center ps-2 pe-2 mb-5 topdiv">
             <ToastContainer />
-            <div className="top-div mt-4">
-                {debtors && (
+            {debtors.length > 0 ? (
+                <div className="top-div mt-4">
                     <select className="form-select" onChange={onSelectedDebtorChange }>
                         {debtors.map(debtor => (
                             <option key={debtor.name }>{debtor.name}</option>
                         ))}
                     </select>
-                )}
 
-                {history && (
-                    <div className="mt-4 d-flex flex-row">
-                        <div>
-                            <small>
-                                Remaining Debt:
-                            </small>
-                        </div>
-                        <div className="ms-auto">
-                            <small className="me-1">
-                                Php
-                            </small>
-                            <strong>
-                                {setDigitFormat(getRemainingBalance()) }
-                            </strong>
-                        </div>
-                    </div>
-                )}
-
-                {addPaymentMode ? (
-                    <div className="d-flex flex-row w-100 mt-3">
-                        <input type="number" inputMode="numeric" className="form-control me-1" value={payment} onChange={handlePaymentChange} />
-                        <button className="btn btn-outline-danger me-1" onClick={() => setAddPaymentMode(false) }>Cancel</button>
-                        <button className="btn btn-success" onClick={(event) => savePayment() }>Save</button>
-                    </div>
-                ) : (
-                    <div className="d-flex flex-row w-100 mt-3">
-                            <button className="btn btn-outline-primary w-100" onClick={() => setAddPaymentMode(true) }>Add payment</button>
-                    </div>
-                )}
-
-                {history && Array.from(sortHistory()).map(([key, value]) => (
-                    <div className="record" key={key}>
-                        <div className="d-flex flex-row mb-2">
-                            <div className="d-flex justify-content-center align-items-center me-2">
-                                {value.purchases ? (<BsBoxArrowRight className="text-danger" title="Debt"/>) : (<BsBoxArrowInLeft className="text-success" title="Payment"/>) }
+                    {history && (
+                        <div className="mt-4 d-flex flex-row">
+                            <div>
+                                <small>
+                                    Remaining Debt:
+                                </small>
                             </div>
-                            <strong>
-                                {formatDate(key) }
-                            </strong>
                             <div className="ms-auto">
-                                <strong className="ms-auto text-danger">
-                                    {getPurchaseTotal(value) }
+                                <small className="me-1">
+                                    Php
+                                </small>
+                                <strong>
+                                    {setDigitFormat(getRemainingBalance()) }
                                 </strong>
                             </div>
                         </div>
-                        {value.purchases && value.purchases.map(purchase => (
-                            <div className="d-flex flex-row" key={key }>
-                                <div className="count">{purchase.count }</div>
-                                <div>{purchase.product.name}</div>
-                                <div className="ms-1"><small>{purchase.product.subtitle}</small></div>
-                                <div className="ms-auto">{setDigitFormat(purchase.product.price * purchase.count)}</div>
-                            </div>
-                        ))}
+                    )}
 
-                        {!value.purchases && (
-                            <div className={`d-flex flex-row ${value > 0 ? 'text-success' : 'text-danger'}`} key={key}>
-                                <div className="count"><strong>{value > 0 ? 'PAID:' : 'BORROWED:'}</strong></div>
-                                <div className="ms-auto"><strong>{setDigitFormat(value)}</strong></div>
+                    {addPaymentMode ? (
+                        <div className="d-flex flex-row w-100 mt-3">
+                            <input type="number" inputMode="numeric" className="form-control me-1" value={payment} onChange={handlePaymentChange} />
+                            <button className="btn btn-outline-danger me-1" onClick={() => setAddPaymentMode(false) }>Cancel</button>
+                            <button className="btn btn-success" onClick={(event) => savePayment() }>Save</button>
+                        </div>
+                    ) : (
+                        <div className="d-flex flex-row w-100 mt-3">
+                                <button className="btn btn-outline-primary w-100" onClick={() => setAddPaymentMode(true) }>Add payment</button>
+                        </div>
+                    )}
+
+                    {history && Array.from(sortHistory()).map(([key, value]) => (
+                        <div className="record" key={key}>
+                            <div className="d-flex flex-row mb-2">
+                                <div className="d-flex justify-content-center align-items-center me-2">
+                                    {value.purchases ? (<BsBoxArrowRight className="text-danger" title="Debt"/>) : (<BsBoxArrowInLeft className="text-success" title="Payment"/>) }
+                                </div>
+                                <strong>
+                                    {formatDate(key) }
+                                </strong>
+                                <div className="ms-auto">
+                                    <strong className="ms-auto text-danger">
+                                        {getPurchaseTotal(value) }
+                                    </strong>
+                                </div>
                             </div>
-                        )}
+                            {value.purchases && value.purchases.map(purchase => (
+                                <div className="d-flex flex-row" key={key }>
+                                    <div className="count">{purchase.count }</div>
+                                    <div>{purchase.product.name}</div>
+                                    <div className="ms-1"><small>{purchase.product.subtitle}</small></div>
+                                    <div className="ms-auto">{setDigitFormat(purchase.product.price * purchase.count)}</div>
+                                </div>
+                            ))}
+
+                            {!value.purchases && (
+                                <div className={`d-flex flex-row ${value > 0 ? 'text-success' : 'text-danger'}`} key={key}>
+                                    <div className="count"><strong>{value > 0 ? 'PAID:' : 'BORROWED:'}</strong></div>
+                                    <div className="ms-auto"><strong>{setDigitFormat(value)}</strong></div>
+                                </div>
+                            )}
+                        </div>
+                    ))}
+                </div>
+            ) : (
+                    <div className="mt-5">
+                        <small>
+                            No debtors on record.
+                        </small>
                     </div>
-                ))}
-            </div>
+            )}
         </div>
     );
 }

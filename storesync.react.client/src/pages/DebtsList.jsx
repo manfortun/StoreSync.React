@@ -1,10 +1,10 @@
-import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { BASE_URL } from '../../utils/constants';
-import { ToastContainer, toast } from "react-toastify";
-import 'react-toastify/dist/ReactToastify.css'
-import './DebtsList.css';
+import { useEffect, useState } from 'react';
 import { BsBoxArrowInLeft, BsBoxArrowRight } from 'react-icons/bs';
+import { ToastContainer, toast } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
+import { BASE_URL } from '../../utils/constants';
+import './DebtsList.css';
 
 const DebtsList = () => {
     const [debtors, setDebtors] = useState([]);
@@ -183,7 +183,7 @@ const DebtsList = () => {
                     <div className="mt-4 d-flex flex-row">
                         <div>
                             <small>
-                                Remaining Balance:
+                                Remaining Debt:
                             </small>
                         </div>
                         <div className="ms-auto">

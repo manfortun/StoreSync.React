@@ -25,7 +25,8 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<Price>()
             .HasOne(p => p.Product)
             .WithMany(p => p.Prices)
-            .HasForeignKey(p => p.Id);
+            .HasForeignKey(p => p.Id)
+            .OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.Entity<Sale>()
             .Property(e => e.Id)
@@ -37,12 +38,14 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<Purchase>()
             .HasOne(p => p.Sale)
             .WithMany(s => s.Purchases)
-            .HasForeignKey(p => p.SaleId);
+            .HasForeignKey(p => p.SaleId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.Entity<Purchase>()
             .HasOne(p => p.Product)
             .WithMany(p => p.Purchases)
-            .HasForeignKey(p => p.ProductId);
+            .HasForeignKey(p => p.ProductId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.Entity<Debtor>()
             .HasKey(d => d.Name);
@@ -50,7 +53,8 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<Debt>()
             .HasOne(d => d.Debtor)
             .WithMany(d => d.Debts)
-            .HasForeignKey(d => d.DebtorName);
+            .HasForeignKey(d => d.DebtorName)
+            .OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.Entity<Debt>()
             .Property(d => d.Id)
@@ -59,7 +63,8 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<DebtPayment>()
             .HasOne(d => d.Debtor)
             .WithMany(d => d.Payments)
-            .HasForeignKey(d => d.DebtorName);
+            .HasForeignKey(d => d.DebtorName)
+            .OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.Entity<DebtPayment>()
             .Property(d => d.Id)
@@ -68,6 +73,7 @@ public class AppDbContext : DbContext
         modelBuilder.Entity<Sale>()
             .HasOne(s => s.Debt)
             .WithMany(d => d.Sales)
-            .HasForeignKey(s => s.DebtId);
+            .HasForeignKey(s => s.DebtId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

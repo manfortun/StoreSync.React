@@ -1,10 +1,10 @@
-import React, {useState } from 'react'
-import './Register.css'
-import axios from 'axios'
-import { ToastContainer, toast } from "react-toastify";
-import 'react-toastify/dist/ReactToastify.css'
+import axios from 'axios';
+import React, { useState } from 'react';
 import { BsUpcScan } from 'react-icons/bs';
-import { BASE_URL } from '../../utils/constants'; 
+import { ToastContainer, toast } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
+import { BASE_URL } from '../../utils/constants';
+import './Register.css';
 
 const Register = () => {
     const [update, setUpdate] = useState(false);

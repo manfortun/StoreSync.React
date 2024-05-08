@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import 'chart.js/auto';
-import { Line } from 'react-chartjs-2';
 import axios from 'axios';
-import './Dashboard.css'
+import 'chart.js/auto';
+import React, { useEffect, useState } from 'react';
+import { Line } from 'react-chartjs-2';
+import { BsListOl, BsPiggyBankFill, BsTrophyFill } from 'react-icons/bs';
 import { BASE_URL } from '../../utils/constants';
-import { BsTrophyFill, BsPiggyBankFill, BsListOl } from 'react-icons/bs';
+import './Dashboard.css';
 
 const Dashboard = () => {
     const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thur', 'Fri', 'Sat'];

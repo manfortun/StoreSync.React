@@ -88,6 +88,20 @@ input::-webkit-inner-spin-button {
     margin-top: 3px;
 }
 
+.search-item {
+    animation-name: reveal;
+    animation-duration: 0.5s;
+    padding: 1.5rem;
+    border-radius: 8px;
+    background-color: white;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+}
+
+.search-item:hover {
+    box-shadow: 0px 0px 10px rgba(0,0,0,0.3);
+}
+
 @keyframes newPurchase {
     from {
         margin-left: 300px;
@@ -95,6 +109,15 @@ input::-webkit-inner-spin-button {
     }
     to {
         margin-left: 0px;
+        opacity: 1;
+    }
+}
+
+@keyframes reveal {
+    from {
+        opacity: 0;
+    }
+    to {
         opacity: 1;
     }
 }

@@ -1,6 +1,6 @@
+import { BsArchiveFill, BsCreditCard2BackFill, BsFillHouseFill, BsSpeedometer, BsUpcScan } from 'react-icons/bs';
 import { Outlet } from "react-router-dom";
-import { BsFillHouseFill, BsSpeedometer, BsArchiveFill, BsUpcScan, BsCreditCard2BackFill } from 'react-icons/bs';
-import "./Layout.css"
+import "./Layout.css";
 
 const Layout = () => {
     return (

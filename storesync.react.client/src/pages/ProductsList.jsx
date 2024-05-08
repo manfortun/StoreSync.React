@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react'
-import axios from 'axios'
-import './ProductsList.css'
-import { ToastContainer, toast } from "react-toastify";
-import 'react-toastify/dist/ReactToastify.css'
-import { BsCopy } from 'react-icons/bs';
-import { BASE_URL } from '../../utils/constants'; 
+import axios from 'axios';
+import React, { useEffect, useState } from 'react';
 import Barcode from 'react-barcode';
+import { BsCopy } from 'react-icons/bs';
+import { ToastContainer, toast } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
+import { BASE_URL } from '../../utils/constants';
+import './ProductsList.css';
 
 const ProductsList = () => {
     const [products, setProducts] = useState([]);
@@ -45,13 +45,15 @@ const ProductsList = () => {
     }
 
     return (
-        <div className="p-4 d-flex flex-column mb-5 overflow-y-auto">
+        <div className="p-4 mb-5 overflow-y-auto">
         <ToastContainer />
-            <div>
-                <h3 className="mb-3">Products List</h3>
+            <div className="d-flex flex-column">
+                <h3 className="mb-1">Products List</h3>
                 {products && (
                     <>
-                        <div><input type="text" className="form-control mb-4 mt-4" placeholder="Search a name, subtitle, or barcode..." value={searchString} onChange={(event) => setSearchString(event.target.value) }></input></div>
+                        <div className="d-flex flex-row">
+                            <input type="text" className="form-control mb-4 mt-4 search-input" placeholder="Search a name, subtitle, or barcode..." value={searchString} onChange={(event) => setSearchString(event.target.value)}></input>
+                        </div>
                         <table className="table">
                             <thead>
                                 <tr>
@@ -66,7 +68,7 @@ const ProductsList = () => {
                                 {products && products.length > 0 && applySearchString().map(product => (
                                     <tr key={product.id}>
                                         <td><button className="btn btn-sm" title="Copy barcode" onClick={(event) => copyToClipboard(product.id) }><BsCopy /></button></td>
-                                        <td className="d-lg-table-cell d-none"><Barcode value={product.id} width={1} height={15} displayValue={true} fontSize={10} /></td>
+                                        <td className="d-lg-table-cell d-none"><Barcode value={product.id} width={1} height={15} displayValue={false} /></td>
                                         <th>{product.name}</th>
                                         <td><small>{product.subtitle}</small></td>
                                         <td>{setDigitFormat(product.price)}</td>

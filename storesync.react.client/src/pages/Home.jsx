@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from "react";
-import { BsReceipt } from 'react-icons/bs';
-import { ToastContainer, toast } from "react-toastify";
-import 'react-toastify/dist/ReactToastify.css'
 import axios from 'axios';
-import './Home.css';
+import React, { useEffect, useRef, useState } from "react";
+import { BsArrowDown, BsArrowReturnLeft, BsArrowUp, BsReceipt } from 'react-icons/bs';
+import { ToastContainer, toast } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 import { BASE_URL } from '../../utils/constants';
 import DebtorModal from '../modals/SelectDebtorModal';
+import './Home.css';
 
 const Home = () => {
     const [barcode, setBarcode] = useState('');
@@ -17,6 +17,22 @@ const Home = () => {
     const [searchedProduct, setSearchedProduct] = useState();
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [debtor, setDebtor] = useState('');
+    const inputRef = useRef(null);
+
+    useEffect(() => {
+        const handleKeyDown = (event) => {
+            if (event.key === 'Enter') {
+                inputRef.current.focus();
+            }
+        };
+
+        document.addEventListener('keydown', handleKeyDown);
+
+        return () => {
+            document.removeEventListener('keydown', handleKeyDown);
+        };
+    }, []);
+
 
     useEffect(() => {
         if (searchText.length <= 0) return setSearchedProduct(null);
@@ -39,7 +55,6 @@ const Home = () => {
         setChange(payment - getTotal());
     }, [payment, barcode]);
 
-    const openModal = () => setIsModalOpen(true);
     const closeModal = () => setIsModalOpen(false);
 
     const handlePaymentChange = (event) => {
@@ -56,6 +71,8 @@ const Home = () => {
         const newBarcode = event.target.value;
         setBarcode(newBarcode);
 
+        if (newBarcode.length < 1) return;
+
         axios.get(`${BASE_URL}/Product/${newBarcode}`)
             .then(response => {
                 addPurchase(response.data);
@@ -68,6 +85,10 @@ const Home = () => {
 
         if (existingIndex !== -1) {
             const updateClassList = [...purchases];
+            if (isNaN(updateClassList[existingIndex].count)) {
+                updateClassList[existingIndex].count = 0;
+            }
+
             updateClassList[existingIndex].count += 1;
             setPurchases(updateClassList);
         } else {
@@ -102,7 +123,7 @@ const Home = () => {
     }
 
     const getTotal = () => {
-        return purchases.reduce((total, item) => total + item.count * item.price, 0);
+        return purchases.reduce((total, item) => total + (isNaN(item.count) ? 0 : item.count) * item.price, 0);
     }
 
     const handleSearchTextChanged = (event) => {
@@ -133,7 +154,17 @@ const Home = () => {
     const handleSavePurchases = async (event) => {
         event.preventDefault();
 
-        const newSalesData = purchases.map((purchase) => ({
+        let filteredPurchases = purchases.filter((p) => {
+            return p.count > 0
+        });
+
+        if (filteredPurchases.length < 1) {
+            setPurchases([]);
+            setPayment('');
+            return;
+        }
+
+        const newSalesData = filteredPurchases.map((purchase) => ({
             productid: purchase.id,
             count: purchase.count
         }));
@@ -192,10 +223,15 @@ const Home = () => {
             <div className="pb-3 pe-lg-3 pt-0 col-lg-9 d-lg-flex flex-column justify-content-top align-items-center">
                 <div className="cashier d-flex flex-lg-row flex-column">
                     <div className="mb-2 me-lg-4 d-flex flex-column col">
-                        <input type="number" className="form-control mb-2 number d-lg-flex d-none" value={barcode} onChange={handleTap} inputMode="numeric" placeholder="Tap item in barcode scanner"></input>
+                        <div className="d-lg-flex d-none flex-column">
+                            <input type="number" className="form-control mb-2 number" ref={inputRef} value={barcode} onChange={handleTap} inputMode="numeric" placeholder="Tap item in barcode scanner"></input>
+                            <small>Tips:</small>
+                            <small>1. Press [ Enter <BsArrowReturnLeft /> ] to focus on the barcode scanning textbox.</small>
+                            <small>2. Press <BsArrowUp /><BsArrowDown /> to change [Payment] or [Purchase Quantity].</small>
+                        </div>
                         <div className="d-flex flex-row mt-lg-auto align-items-center">
                             <span>Payment</span>
-                            <input type="number" value={payment} className="ms-auto form-control payment number" inputMode="numeric" onChange={handlePaymentChange} disabled={purchases.length <= 0}></input>
+                            <input type="number" value={payment} min={0} className="ms-auto form-control payment number" inputMode="numeric" onChange={handlePaymentChange} disabled={purchases.length <= 0}></input>
                         </div>
                         <div className="d-flex flex-row mt-2">
                             <span><strong>TOTAL</strong></span>
@@ -213,7 +249,7 @@ const Home = () => {
                             {purchases.map((item, index) => (
                                 <div className="purchase" key={item.id}>
                                     <div className="product d-flex flex-row">
-                                        <input type="number" inputMode="numeric" value={item.count} className="product-count" onChange={(event) => handlePurchaseCountChange(item.id, event)} onKeyDown={(event) => handlePurchaseConfirmed(item.id, event) }></input>
+                                        <input type="number" inputMode="numeric" value={item.count} className="product-count" onChange={(event) => handlePurchaseCountChange(item.id, event)} onKeyDown={(event) => handlePurchaseConfirmed(item.id, event)} placeholder="0" min={0 }></input>
                                         <div className="d-flex flex-column">
                                             <span className="me-1">{item.name}</span>
                                             <small>{item.subtitle}</small>
@@ -252,10 +288,21 @@ const Home = () => {
                     <input type="text" value={searchText} onChange={handleSearchTextChanged} onMouseDown={() => setSearchText('') } className="form-control mb-4" placeholder="Search an item or scan barcode..."></input>
                     <div className="p-2">
                         {searchedProduct && searchedProduct.map(p => (
-                            <div className="d-flex flex-column mb-3" key={p.id }>
-                                <span>{p.name}</span>
-                                <small className="st">{p.subtitle}</small>
-                                <span>Price: {setDigitFormat(p.price) }</span>
+                            <div className="d-flex flex-column mb-3 search-item" key={p.id}>
+                                <div className="d-flex flex-row">
+                                    <div className="d-flex flex-column">
+                                        <strong>{p.name}</strong>
+                                        <small className="st">{p.subtitle}</small>
+                                    </div>
+                                    <div className="ms-auto d-flex flex-row">
+                                        <small className="st me-1">
+                                            Php
+                                        </small>
+                                        <h5>
+                                            {setDigitFormat(p.price)}
+                                        </h5>
+                                    </div>
+                                </div>
                                 <button onClick={handleTap} value={p.id } className="btn btn-outline-primary mt-3">Add</button>
                             </div>
                         ))}

@@ -98,6 +98,21 @@ const Register = () => {
             });
     }
 
+    const generateBarcode = () => {
+        let result = '';
+        const characters = '0123456789';
+        const charLength = characters.length;
+
+        for (let i = 0; i < 13; i++) {
+            result += characters.charAt(Math.floor(Math.random() * charLength));
+        }
+
+        setProduct({
+            ...product,
+            id: result
+        });
+    }
+
     const updateExisting = async (event) => {
         event.preventDefault();
 
@@ -128,6 +143,7 @@ const Register = () => {
             });
 
             setConfirmDelete(false);
+            setUpdate(false);
         } else {
             setConfirmDelete(true);
         }
@@ -137,9 +153,12 @@ const Register = () => {
         <div className="d-flex flex-column justify-content-center align-items-center p-5 mb-5">
         <ToastContainer />
             <div className="main-div">
-                <div className="form-floating mb-3">
-                    <input type="number" className="form-control" value={product.id} onChange={handleBarcodeChange} id="floatingInput" placeholder="name@example.com" /> 
-                    <label htmlFor="floatingInput"><BsUpcScan></BsUpcScan></label>
+                <div className="input-group mb-3">
+                    <div className="form-floating">
+                        <input type="number" className="form-control" value={product.id} onChange={handleBarcodeChange} id="floatingInput" placeholder="name@example.com" /> 
+                        <label htmlFor="floatingInput"><BsUpcScan></BsUpcScan></label>
+                    </div>
+                    <button className="btn btn-outline-primary" title="Generate a random barcode" onClick={() => generateBarcode() }>Generate Barcode</button>
                 </div>
                 <div className="form-floating mb-3">
                     <input type="text" className="form-control" value={product.name} onChange={handleNameChange } id="floatingInput" placeholder="name@example.com" />
@@ -157,7 +176,7 @@ const Register = () => {
                     {confirmDelete ? (
                         <button className="w-100 btn btn-danger me-1" onClick={(event) => handleClearClick(event)}>Click to confirm</button>
                     ) : (
-                        <button className="w-100 btn btn-outline-danger me-1" onClick={(event) => handleClearClick(event)}>Delete</button>
+                        <button className="w-100 btn btn-outline-danger me-1" onClick={(event) => handleClearClick(event)}>Clear</button>
                     )}
                     {getSaveButton() }
                 </div>

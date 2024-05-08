@@ -4,6 +4,7 @@ import { BASE_URL } from '../../utils/constants';
 import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css'
 import './DebtsList.css';
+import { BsBoxArrowInLeft, BsBoxArrowRight } from 'react-icons/bs';
 
 const DebtsList = () => {
     const [debtors, setDebtors] = useState([]);
@@ -156,6 +157,16 @@ const DebtsList = () => {
         setPayment(value);
     }
 
+    const getPurchaseTotal = (purchase) => {
+        if (!purchase.purchases) return '';
+
+        const total = purchase.purchases.reduce((pTotal, product) => {
+            return pTotal + product.count * product.product.price;
+        }, 0);
+
+        return setDigitFormat(total).toString();
+    }
+
     return (
         <div className="d-flex flex-column justify-content-center align-items-center ps-2 pe-2 mb-5 topdiv">
             <ToastContainer />
@@ -169,7 +180,7 @@ const DebtsList = () => {
                 )}
 
                 {history && (
-                    <div className="mb-3 mt-4 d-flex flex-row">
+                    <div className="mt-4 d-flex flex-row">
                         <div>
                             <small>
                                 Remaining Balance:
@@ -187,30 +198,38 @@ const DebtsList = () => {
                 )}
 
                 {addPaymentMode ? (
-                    <div className="d-flex flex-row w-100">
+                    <div className="d-flex flex-row w-100 mt-3">
                         <input type="number" inputMode="numeric" className="form-control me-1" value={payment} onChange={handlePaymentChange} />
                         <button className="btn btn-outline-danger me-1" onClick={() => setAddPaymentMode(false) }>Cancel</button>
-                        <button className="btn btn-success" onClick={(event) => savePayment(event) }>Save</button>
+                        <button className="btn btn-success" onClick={(event) => savePayment() }>Save</button>
                     </div>
                 ) : (
-                    <div className="d-flex flex-row w-100">
+                    <div className="d-flex flex-row w-100 mt-3">
                             <button className="btn btn-outline-primary w-100" onClick={() => setAddPaymentMode(true) }>Add payment</button>
                     </div>
                 )}
 
                 {history && Array.from(sortHistory()).map(([key, value]) => (
                     <div className="record" key={key}>
-                        <div className="mb-2">
+                        <div className="d-flex flex-row mb-2">
+                            <div className="d-flex justify-content-center align-items-center me-2">
+                                {value.purchases ? (<BsBoxArrowRight className="text-danger" title="Debt"/>) : (<BsBoxArrowInLeft className="text-success" title="Payment"/>) }
+                            </div>
                             <strong>
                                 {formatDate(key) }
                             </strong>
+                            <div className="ms-auto">
+                                <strong className="ms-auto text-danger">
+                                    {getPurchaseTotal(value) }
+                                </strong>
+                            </div>
                         </div>
                         {value.purchases && value.purchases.map(purchase => (
                             <div className="d-flex flex-row" key={key }>
                                 <div className="count">{purchase.count }</div>
                                 <div>{purchase.product.name}</div>
                                 <div className="ms-1"><small>{purchase.product.subtitle}</small></div>
-                                <div className="ms-auto text-danger"><strong>{setDigitFormat(purchase.product.price * purchase.count)}</strong></div>
+                                <div className="ms-auto">{setDigitFormat(purchase.product.price * purchase.count)}</div>
                             </div>
                         ))}
 

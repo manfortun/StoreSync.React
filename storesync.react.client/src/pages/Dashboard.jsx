@@ -3,7 +3,8 @@ import 'chart.js/auto';
 import { Line } from 'react-chartjs-2';
 import axios from 'axios';
 import './Dashboard.css'
-import { BASE_URL } from '../../utils/constants'; 
+import { BASE_URL } from '../../utils/constants';
+import { BsTrophyFill, BsPiggyBankFill, BsListOl } from 'react-icons/bs';
 
 const Dashboard = () => {
     const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thur', 'Fri', 'Sat'];
@@ -54,7 +55,7 @@ const Dashboard = () => {
     const chartData = () => {
         const keys = Object.keys(graphData.sales);
         const dates = Array.from(keys).map(getDayName);
-        const data =  {
+        const data = {
             labels: dates,
             datasets: [
                 {
@@ -62,6 +63,12 @@ const Dashboard = () => {
                     fill: false,
                     borderColor: 'rgb(75, 192, 192)',
                     tension: 0.3
+                },
+                {
+                    data: Object.values(graphData.debts),
+                    fill: false,
+                    borderColor: 'rgb(229, 75, 91)',
+                    tension: 0
                 }
             ]
         };
@@ -92,6 +99,38 @@ const Dashboard = () => {
                 total: value.total,
             }
         }));
+    }
+
+    const getCurrentSale = () => {
+        if (!graphData || !graphData.sales) return 0;
+
+        let saleOfTheDay;
+        let maxDate;
+
+        for (const [date, obj] of Object.entries(graphData.sales)) {
+            if (!maxDate || date > maxDate) {
+                maxDate = date;
+                saleOfTheDay = obj;
+            }
+        }
+
+        return saleOfTheDay;
+    }
+
+    const getCurrentDebt = () => {
+        if (!graphData || !graphData.sales) return 0;
+
+        let currentDebt;
+        let maxDate;
+
+        for (const [date, obj] of Object.entries(graphData.debts)) {
+            if (!maxDate || date > maxDate) {
+                maxDate = date;
+                currentDebt = obj;
+            }
+        }
+
+        return currentDebt;
     }
 
     const getProductsList = () => {
@@ -139,6 +178,8 @@ const Dashboard = () => {
             }
         }
     };
+
+
     return (
         <div className="d-flex flex-column justify-md-content-center align-items-center topdiv mb-5">
             <div className="dashboard-wide mt-3 d-flex flex-row">
@@ -151,45 +192,64 @@ const Dashboard = () => {
             <div className="d-flex flex-md-row flex-column justify-content-center align-items-center pt-3">
                 <div className="dashboard me-md-2 me-0">
                     <div className="d-flex flex-row w-100">
-                        <strong>Total Sales</strong>
-                    </div>
-                    {summary && (
-                        <div className="d-flex flex-row w-100 mb-1 mt-3">
-                            <span className="me-2">
-                                Php
-                            </span>
-                            <h3>
-                                {setDigitFormat(summary.saleForTheDay)}
-                            </h3>
+                        <div className="d-flex flex-row mb-2 align-items-center">
+                            <BsPiggyBankFill className="me-2 text-success" />
+                            <strong>Earnings</strong>
                         </div>
-                    )}
-                    <div className="mt-3">
-                        {graphData && graphData.sales && (
-                            <>
+                    </div>
+                    {graphData && (
+                        <>
+                            <div className="d-flex flex-row w-100 mb-1 mt-3">
+                                <span className="me-2">
+                                    Php
+                                </span>
+                                <h3>
+                                    {setDigitFormat(getCurrentSale())}
+                                </h3>
+                            </div>
+                            <div className="mt-2">
                                 <div className="d-flex flex-row w-100">
                                     <span>
-                                        Daily Average
+                                        Average Sale
                                     </span>
                                     <span className="ms-auto">
                                         <small className="me-1">Php</small>
                                         {setDigitFormat(graphData.average)}
                                     </span>
                                 </div>
-                                <Line data={chartData()} options={optionss} className="mt-5"/>
-                            </>
-                        )}
-                    </div>
+                                <div className="d-flex flex-row w-100">
+                                    <span>
+                                        Remaining Debt
+                                    </span>
+                                    <span className="ms-auto">
+                                        <small className="me-1">Php</small>
+                                        <span className={getCurrentDebt() < 1 ? "" : "text-danger"}>
+                                            {setDigitFormat(getCurrentDebt())}
+                                        </span>
+                                    </span>
+                                </div>
+                                <Line data={chartData()} options={optionss} className="mt-4"/>
+                            </div>
+                        </>
+                    )}
                 </div>
                 <div className="dashboard mt-2 mt-md-0">
                     <div className="d-flex flex-column w-100">
-                        <strong className="mb-4">Top Products</strong>
+                        <div className="d-flex flex-row mb-4 align-items-center">
+                            <BsTrophyFill className="me-2 text-warning"/>
+                            <strong>Top Products</strong>
+                        </div>
                         <div>
                             {getTopProductsData(5).map(product => (
                                 <div className="top-product d-flex flex-row" key={Object.keys(product)[0]}>
-                                    <span>
-                                        {Object.values(product)[0].name}
+                                    <span className="d-flex flex-row">
+                                        <div className="ellipsis" title={Object.values(product)[0].name }>
+                                            {Object.values(product)[0].name}
+                                        </div>
                                         {Object.values(product)[0].subtitle && (
-                                            <small className="ms-1">{Object.values(product)[0].subtitle}</small>
+                                            <div className="ellipsis" title={Object.values(product)[0].subtitle }>
+                                                <small className="ms-1">{Object.values(product)[0].subtitle}</small>
+                                            </div>
                                         )}
                                     </span>
                                     <div className="ms-auto">
@@ -203,14 +263,21 @@ const Dashboard = () => {
             </div>
             <div className="dashboard dashboard-wide mt-2 h-100 mb-5">
                 <div className="d-flex flex-column w-100 purchase-list pb-3">
-                    <strong className="mb-4">Purchases</strong>
+                    <div className="d-flex flex-row mb-4 align-items-center">
+                        <BsListOl className="me-2" />
+                        <strong>Purchases</strong>
+                    </div>
                     {getProductsList().map(p => (
                         <div key={Object.keys(p)[0]} className="d-flex flex-row">
-                            <strong className="me-2 pt">{Object.values(p)[0].count }</strong>
-                            <span>
-                                {Object.values(p)[0].name}
+                            <strong className="me-2 pt">{Object.values(p)[0].count}</strong>
+                            <span className="d-flex flex-row">
+                                <div className="ellipsis" title={Object.values(p)[0].name}>
+                                    {Object.values(p)[0].name}
+                                </div>
                                 {Object.values(p)[0].subtitle && (
-                                    <small className="ms-1">{Object.values(p)[0].subtitle}</small>
+                                    <div className="ellipsis" title={Object.values(p)[0].subtitle}>
+                                        <small className="ms-1">{Object.values(p)[0].subtitle}</small>
+                                    </div>
                                 )}
                             </span>
                             <div className="ms-auto">

@@ -57,6 +57,7 @@ input::-webkit-inner-spin-button {
 .purchase {
     background-color: white;
     padding: 8px;
+    padding-bottom: 12px;
     border-radius: 1rem;
     position: relative;
     width: inherit;

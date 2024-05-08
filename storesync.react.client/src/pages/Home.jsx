@@ -214,12 +214,18 @@ const Home = () => {
                                 <div className="purchase" key={item.id}>
                                     <div className="product d-flex flex-row">
                                         <input type="number" inputMode="numeric" value={item.count} className="product-count" onChange={(event) => handlePurchaseCountChange(item.id, event)} onKeyDown={(event) => handlePurchaseConfirmed(item.id, event) }></input>
-                                        <span className="me-1">{item.name} <small>{item.subtitle}</small></span>
-                                        <span> @ {setDigitFormat(item.price)}</span>
+                                        <div className="d-flex flex-column">
+                                            <span className="me-1">{item.name}</span>
+                                            <small>{item.subtitle}</small>
+                                            <span className="badge rounded-pill bg-success align-self-start mt-2">Price: {setDigitFormat(item.price)}</span>
+                                        </div>
                                         {isNaN(getProductTotal(item.id)) || getProductTotal(item.id) <= 0 ? (
                                             <small className="ms-auto text-danger d-flex align-items-center">Enter to remove</small>
                                         ) : (
-                                            <span className="ms-auto">{setDigitFormat(getProductTotal(item.id))}</span>
+                                                <div className="d-flex flex-column ms-auto justify-content-center align-items-end me-3">
+                                                    <span>{setDigitFormat(getProductTotal(item.id))}</span>
+                                                    <small>Total</small>
+                                                </div>
                                         )}
                                     </div>
                                 </div>
@@ -247,7 +253,7 @@ const Home = () => {
                     <div className="p-2">
                         {searchedProduct && searchedProduct.map(p => (
                             <div className="d-flex flex-column mb-3" key={p.id }>
-                                <span className="me-2">{p.name}</span>
+                                <span>{p.name}</span>
                                 <small className="st">{p.subtitle}</small>
                                 <span>Price: {setDigitFormat(p.price) }</span>
                                 <button onClick={handleTap} value={p.id } className="btn btn-outline-primary mt-3">Add</button>

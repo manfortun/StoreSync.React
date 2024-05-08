@@ -55,11 +55,12 @@ public class PurchaseController : ControllerBase
     [HttpGet("{from}~{to}")]
     public IActionResult GetSalesRange(DateTime from, DateTime to)
     {
-        var sales = _unitOfWork.Sales.GetAll(s => s.DateOfPurchase.Date >= from.Date && s.DateOfPurchase.Date <= to.Date);
-
+        var sales = _unitOfWork.Sales.GetAll(s => (s.DateOfPurchase.Date >= from.Date && s.DateOfPurchase.Date <= to.Date) || !string.Empty(s.DebtId));
+        var payments = _unitOfWork.DebtPayments.GetAll(s => s.DateCreated.Date <= to.Date);
 
         var salesRangeRead = new SalesRangeRead
         {
+            Debts = new Dictionary<DateTime, double>(),
             Sales = new Dictionary<DateTime, double>(),
             Average = 0
         };
@@ -68,17 +69,62 @@ public class PurchaseController : ControllerBase
         while (currentDate <= to.Date)
         {
             salesRangeRead.Sales.Add(currentDate.Date, 0);
+            salesRangeRead.Debts.Add(currentDate.Date, 0);
             currentDate = currentDate.AddDays(1);
         }
 
         foreach (var sale in sales)
         {
             DateTime dateOfSale = sale.DateOfPurchase;
-            foreach (var purchase in sale.Purchases)
+            if (!string.IsNullOrEmpty(sale.DebtId))
             {
-                double price = _unitOfWork.Prices.Get(purchase.ProductId, dateOfSale)?.Value ?? 0;
-                salesRangeRead.Sales[dateOfSale.Date] += purchase.Count * price;
-                salesRangeRead.Average += purchase.Count * price;
+                foreach (var purchase in sale.Purchases)
+                {
+                    double price = _unitOfWork.Prices.Get(purchase.ProductId, dateOfSale)?.Value ?? 0;
+                    double total = price * purchase.Count;
+                    var currDate = dateOfSale.Date;
+
+                    while (currDate <= to.Date)
+                    {
+                        if (currDate < from.Date)
+                        {
+                            salesRangeRead.Debts[from.Date] += total;
+                            currDate = from.Date.AddDays(1);
+                        }
+                        else
+                        {
+                            salesRangeRead.Debts[currDate] += total;
+                            currDate = currDate.AddDays(1);
+                        }
+                    }
+                }
+            }
+            else if (sale.DateOfPurchase.Date >= from.Date && sale.DateOfPurchase.Date <= to.Date)
+            {
+                foreach (var purchase in sale.Purchases)
+                {
+                    double price = _unitOfWork.Prices.Get(purchase.ProductId, dateOfSale)?.Value ?? 0;
+                    salesRangeRead.Sales[dateOfSale.Date] += purchase.Count * price;
+                    salesRangeRead.Average += purchase.Count * price;
+                }
+            }
+        }
+
+        foreach (var payment in payments)
+        {
+            var currDate = payment.DateCreated.Date;
+            while (currDate <= to.Date)
+            {
+                if (currDate < from.Date)
+                {
+                    salesRangeRead.Debts[from.Date] -= payment.Payment;
+                    currDate = from.Date.AddDays(1);
+                }
+                else
+                {
+                    salesRangeRead.Debts[currDate] -= payment.Payment;
+                    currDate = currDate.AddDays(1);
+                }
             }
         }
 
@@ -90,11 +136,10 @@ public class PurchaseController : ControllerBase
     [HttpGet("Summary/{to}")]
     public IActionResult GetSummary(DateTime to)
     {
-        var sales = _unitOfWork.Sales.GetAll(s => s.DateOfPurchase.Date == to.Date);
+        var sales = _unitOfWork.Sales.GetAll(s => s.DateOfPurchase.Date == to.Date && string.IsNullOrEmpty(s.DebtId));
 
         var summary = new SaleSummary
         {
-            SaleForTheDay = 0,
             ProductSales = new Dictionary<string, ProductSale>()
         };
 
@@ -129,8 +174,6 @@ public class PurchaseController : ControllerBase
                 summary.ProductSales[purchase.ProductId].Total += purchaseTotal;
             }
         }
-
-        summary.SaleForTheDay = saleForTheDay;
 
         return Ok(summary);
     }

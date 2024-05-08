@@ -5,6 +5,7 @@ import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css'
 import { BsCopy } from 'react-icons/bs';
 import { BASE_URL } from '../../utils/constants'; 
+import Barcode from 'react-barcode';
 
 const ProductsList = () => {
     const [products, setProducts] = useState([]);
@@ -44,9 +45,9 @@ const ProductsList = () => {
     }
 
     return (
-        <div className="row p-4 d-flex flex-column justify-content-center align-items-center mb-5">
-            <ToastContainer />
-            <div className="product-list-div">
+        <div className="p-4 d-flex flex-column mb-5 overflow-y-auto">
+        <ToastContainer />
+            <div>
                 <h3 className="mb-3">Products List</h3>
                 {products && (
                     <>
@@ -55,7 +56,7 @@ const ProductsList = () => {
                             <thead>
                                 <tr>
                                     <td></td>
-                                    <td>Barcode</td>
+                                    <td className="d-lg-table-cell d-none">Barcode</td>
                                     <td>Name</td>
                                     <td>Subtitle</td>
                                     <td>Price (Php)</td>
@@ -65,9 +66,9 @@ const ProductsList = () => {
                                 {products && products.length > 0 && applySearchString().map(product => (
                                     <tr key={product.id}>
                                         <td><button className="btn btn-sm" title="Copy barcode" onClick={(event) => copyToClipboard(product.id) }><BsCopy /></button></td>
-                                        <td>{product.id}</td>
+                                        <td className="d-lg-table-cell d-none"><Barcode value={product.id} width={1} height={15} displayValue={true} fontSize={10} /></td>
                                         <th>{product.name}</th>
-                                        <td>{product.subtitle}</td>
+                                        <td><small>{product.subtitle}</small></td>
                                         <td>{setDigitFormat(product.price)}</td>
                                     </tr>
                                 )) }

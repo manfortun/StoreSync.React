@@ -12,12 +12,23 @@
     border-radius: 1rem;
 }
 
+.ellipsis {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100px;
+}
+
 .topdiv {
     overflow-y: auto;
 }
 
+.topdiv::-webkit-scrollbar{
+    width: 0px;
+}
+
 .dashboard-wide {
-    width:700px;
+    width: 710px;
 }
 
 .pt {

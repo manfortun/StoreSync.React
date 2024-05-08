@@ -29,6 +29,7 @@
 
 .dashboard-wide {
     width: 710px;
+    height: fit-content;
 }
 
 .pt {

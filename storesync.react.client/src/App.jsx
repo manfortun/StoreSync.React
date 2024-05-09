@@ -5,6 +5,7 @@ import Register from "./pages/Register"
 import Dashboard from "./pages/Dashboard"
 import ProductsList from "./pages/ProductsList"
 import DebtsList from "./pages/DebtsList"
+import DailySales from "./pages/DailySales";
 import './App.css';
 
 export default function App() {
@@ -13,7 +14,8 @@ export default function App() {
             <Routes>
                 <Route path="/" element={<Layout />}>
                     <Route index element={<Home />} />
-                    <Route path="dashboard" element={<Dashboard />} />
+                    <Route path="dailySales" element={<DailySales />} />
+                    <Route path="dashboard/:date" element={<Dashboard />} />
                     <Route path="register" element={<Register />} />
                     <Route path="productsList" element={<ProductsList /> } />
                     <Route path="debtsList" element={<DebtsList /> } />

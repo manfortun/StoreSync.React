@@ -3,14 +3,16 @@ import 'chart.js/auto';
 import React, { useEffect, useState } from 'react';
 import { Line } from 'react-chartjs-2';
 import { BsListOl, BsPiggyBankFill, BsTrophyFill } from 'react-icons/bs';
+import { useParams } from 'react-router-dom';
 import { BASE_URL } from '../../utils/constants';
 import './Dashboard.css';
 
 const Dashboard = () => {
+    let { date } = useParams();
     const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thur', 'Fri', 'Sat'];
     const [summary, setSummary] = useState();
     const [graphData, setGraphData] = useState();
-    const [selectedDate, setSelectedDate] = useState(new Date());
+    const [selectedDate, setSelectedDate] = useState(new Date(date));
 
     useEffect(() => {
         getSaleSummary();
@@ -179,15 +181,20 @@ const Dashboard = () => {
         }
     };
 
+    const formatDate = (date) => {
+        const options = {
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric',
+        };
+
+        return new Intl.DateTimeFormat('en-GB', options).format(new Date(date));
+    }
 
     return (
         <div className="d-flex flex-column justify-md-content-center align-items-center topdiv mb-5">
             <div className="dashboard-wide mt-3 d-flex flex-row">
-                <div className="ms-auto">
-                    <span className="me-1">Select date:</span>
-                    <small>(DD/MM/YYYY)</small>
-                    <input type="date" className="form-control ms-auto dateinput" value={selectedDate.toLocaleString('sv').split(' ')[0]} onChange={handleDateChange} />
-                </div>
+                <h4>{formatDate(selectedDate)}</h4>
             </div>
             <div className="d-flex flex-md-row flex-column justify-content-center align-items-center pt-3">
                 <div className="dashboard me-md-2 me-0">

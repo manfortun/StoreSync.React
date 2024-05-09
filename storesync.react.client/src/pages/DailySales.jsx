@@ -126,16 +126,16 @@ const DailySales = () => {
                                     </div>
                                     <div className="d-flex flex-row text-danger">
                                         <div>
-                                            Debt
+                                            Debt:
                                         </div>
                                     </div>
-                                    <div className="d-flex flex-row">
+                                    <div className="d-flex flex-row align-items-baseline">
                                         <small className="ms-1">(new)</small>
                                         <div className="ms-auto text-danger">
                                             {setDigitFormat(record.debt)}
                                         </div>
                                     </div>
-                                    <div className="d-flex flex-row">
+                                    <div className="d-flex flex-row align-items-baseline">
                                         <small className="ms-1">(remaining)</small>
                                         <div className="ms-auto text-danger">
                                             {setDigitFormat(getCompoundedDebt(record.date))}

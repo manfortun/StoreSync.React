@@ -25,7 +25,7 @@ const ProductsList = () => {
             return (
                 p.id.includes(searchString) ||
                 p.name.toLowerCase().includes(searchString.toLowerCase()) ||
-                p.subtitle.toLowerCase().includes(searchString.toLowerCase())
+                (p.subtitle && p.subtitle.toLowerCase().includes(searchString.toLowerCase()))
             );
         });
     }

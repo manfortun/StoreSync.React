@@ -21,7 +21,7 @@ const Home = () => {
 
     useEffect(() => {
         const handleKeyDown = (event) => {
-            if (event.key === 'Enter') {
+            if (!document.activeElement.classList.contains('focusable')) {
                 inputRef.current.focus();
             }
         };
@@ -198,7 +198,7 @@ const Home = () => {
                     debtorName: debtor,
                     debt: { purchases: newSalesData }
                 });
-                toast.success('Debt was charged successfully.');
+                toast.success(`Debt was charged successfully to ${debtor}.`);
                 setPurchases([]);
                 setPayment('');
             } catch (error) {
@@ -223,22 +223,22 @@ const Home = () => {
             <div className="pb-3 pe-lg-3 pt-0 col-lg-9 d-lg-flex flex-column justify-content-top align-items-center">
                 <div className="cashier d-flex flex-lg-row flex-column">
                     <div className="mb-2 me-lg-4 d-flex flex-column col">
-                        <div className="d-lg-flex d-none flex-column">
+                        <div className="d-lg-flex flex-column hidden-control">
                             <input type="number" className="form-control mb-2 number" ref={inputRef} value={barcode} onChange={handleTap} inputMode="numeric" placeholder="Tap item in barcode scanner"></input>
                             <small>Tips:</small>
                             <small>1. Press [ Enter <BsArrowReturnLeft /> ] to focus on the barcode scanning textbox.</small>
                             <small>2. Press <BsArrowUp /><BsArrowDown /> to change [Payment] or [Purchase Quantity].</small>
                         </div>
-                        <div className="d-flex flex-row mt-lg-auto align-items-center">
+                        <div className="d-flex flex-row mt-lg-auto align-items-center fs-3">
                             <span>Payment</span>
-                            <input type="number" value={payment} min={0} className="ms-auto form-control payment number" inputMode="numeric" onChange={handlePaymentChange} disabled={purchases.length <= 0}></input>
+                            <input type="number" value={payment} min={0} className="ms-auto form-control payment number focusable" inputMode="numeric" onChange={handlePaymentChange} disabled={purchases.length <= 0}></input>
                         </div>
-                        <div className="d-flex flex-row mt-2">
+                        <div className="d-flex flex-row mt-2 fs-3">
                             <span><strong>TOTAL</strong></span>
                             <span className="ms-auto"><strong>{setDigitFormat(getTotal())}</strong></span>
                         </div>
                         <hr/>
-                        <div className="d-flex flex-row">
+                        <div className="d-flex flex-row fs-3">
                             <span>Change</span>
                             <span className="ms-auto">{isNaN(change) ? "---" : setDigitFormat(change)}</span>
                         </div>
@@ -249,7 +249,7 @@ const Home = () => {
                             {purchases.map((item, index) => (
                                 <div className="purchase" key={item.id}>
                                     <div className="product d-flex flex-row">
-                                        <input type="number" inputMode="numeric" value={item.count} className="product-count" onChange={(event) => handlePurchaseCountChange(item.id, event)} onKeyDown={(event) => handlePurchaseConfirmed(item.id, event)} placeholder="0" min={0 }></input>
+                                        <input type="number" inputMode="numeric" value={item.count} className="product-count focusable" onChange={(event) => handlePurchaseCountChange(item.id, event)} onKeyDown={(event) => handlePurchaseConfirmed(item.id, event)} placeholder="0" min={0 }></input>
                                         <div className="d-flex flex-column">
                                             <span className="me-1">{item.name}</span>
                                             <small>{item.subtitle}</small>
@@ -285,7 +285,7 @@ const Home = () => {
             </div>
             <div className="col-lg-3 quickview">
                 <div>
-                    <input type="text" value={searchText} onChange={handleSearchTextChanged} onMouseDown={() => setSearchText('')} className="form-control" placeholder="Search an item or scan barcode..."></input>
+                    <input type="text" value={searchText} onChange={handleSearchTextChanged} onMouseDown={() => setSearchText('')} className="form-control focusable" placeholder="Search an item or scan barcode..."></input>
                     {searchedProduct && searchedProduct.map(p => (
                         <div className="d-flex flex-column search-item mt-3" key={p.id}>
                             <div className="d-flex flex-row">

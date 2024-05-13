@@ -25,7 +25,7 @@ input::-webkit-inner-spin-button {
 }
 
 .payment {
-    width: 100px!important;
+    width: 150px!important;
 }
 
 .product {
@@ -100,6 +100,11 @@ input::-webkit-inner-spin-button {
     background-color: white;
     cursor: pointer;
     transition: all 0.3s ease-in-out;
+}
+
+.hidden-control {
+    height: 0px!important;
+    opacity: 0!important;
 }
 
 .search-item:hover {

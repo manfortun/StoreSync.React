@@ -270,8 +270,15 @@ public class PurchaseController : ControllerBase
                 dailySales.Payments.Add(payment.DateCreated.Date, 0);
             }
 
-            dailySales.Payments[payment.DateCreated.Date] += payment.Payment;
-            grandTotal += payment.Payment;
+            if (double.IsNegative(payment.Payment))
+            {
+                dailySales.Debts[payment.DateCreated.Date] += Math.Abs(payment.Payment);
+            }
+            else
+            {
+                dailySales.Payments[payment.DateCreated.Date] += payment.Payment;
+                grandTotal += payment.Payment;
+            }
         }
 
         dailySales.NoOfDays = dailySales.Sales.Keys.Count;

@@ -2,6 +2,7 @@
 using StoreSync.DTO;
 using StoreSync.React.Server.DataAccess;
 using StoreSync.React.Server.Models;
+using StoreSync.React.Server.Services;
 
 namespace StoreSync.React.Server.Controllers;
 
@@ -69,12 +70,12 @@ public class ProductController : ControllerBase
 
         if (!searchedProducts.Any())
         {
-            searchString = string.Join("", searchString.ToLower().Split(' '));
+            searchString = searchString.ToSimpleString();
             var matchingProducts = products.Select(p =>
             {
-                var name = string.Join("", p.Name.ToLower().Split(' '));
-                var subtitle = string.IsNullOrEmpty(p.Subtitle) ? "" : string.Join("", p.Subtitle.ToLower().Split(' '));
-                var searchValue = name + subtitle;
+                var name = p.Name.ToSimpleString();
+                var subtitle = p.Subtitle.ToSimpleString();
+                var searchValue = $"{name}{subtitle}";
 
                 var matchScore = searchString.Sum(word =>
                 {
@@ -93,11 +94,12 @@ public class ProductController : ControllerBase
 
             searchedProducts = matchingProducts
                 .Where(mp => mp.MatchScore == searchString.Length)
-                .OrderByDescending(mp => mp.Product.Name.ToLower().StartsWith(searchString))
-                .ThenByDescending(mp => !string.IsNullOrEmpty(mp.Product.Subtitle) && mp.Product.Subtitle.ToLower().StartsWith(searchString))
-                .ThenByDescending(mp => mp.Product.Name.ToLower().Contains(searchString))
-                .ThenByDescending(mp => !string.IsNullOrEmpty(mp.Product.Subtitle) && mp.Product.Subtitle.ToLower().Contains(searchString))
+                .OrderByDescending(mp => mp.Product.Name.ToSimpleString().StartsWith(searchString))
+                .ThenByDescending(mp => mp.Product.Subtitle.ToSimpleString().StartsWith(searchString))
+                .ThenByDescending(mp => mp.Product.Name.ToSimpleString().Contains(searchString))
+                .ThenByDescending(mp => mp.Product.Subtitle.ToSimpleString().Contains(searchString))
                 .ThenByDescending(mp => mp.MatchScore)
+                .Take(10)
                 .Select(mp => mp.Product);
         }
 

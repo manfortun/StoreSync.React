@@ -211,7 +211,9 @@ const Dashboard = () => {
                                     Php
                                 </span>
                                 <h3>
-                                    {setDigitFormat(getCurrentSale())}
+                                    <strong>
+                                        {setDigitFormat(getCurrentSale())}
+                                    </strong>
                                 </h3>
                             </div>
                             <div className="mt-2">

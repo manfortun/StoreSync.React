@@ -50,6 +50,10 @@ input::-webkit-inner-spin-button {
     border: 1px solid rgb(200, 200, 200);
 }
 
+.quickview>div>.search-item:first-of-type {
+    margin-top: 1rem;
+}
+
 .purchase {
     background-color: white;
     padding: 1rem;
@@ -68,7 +72,14 @@ input::-webkit-inner-spin-button {
 
 .time {
     font-size: 140px;
+    margin-bottom: -20px;
     transition: all 0.3s ease-in-out;
+}
+
+.weather-icon {
+    filter: brightness(0) invert(1);
+    height: 32px;
+    width: 32px;
 }
 
 .purchase-div {
@@ -92,12 +103,15 @@ input::-webkit-inner-spin-button {
 
 .search-item {
     animation-name: reveal-rotate;
-    animation-duration: 0.5s;
+    animation-duration: 1s;
     border-radius: 8px;
-    background-color: white;
     cursor: pointer;
-    transition: all 0.3s ease-in-out;
-    transition: background-color 0.1s ease-in-out;
+    transition: margin 0s, box-shadow 0.3s, background-color 0.3s ease-in-out;
+}
+
+.search-item:hover {
+    box-shadow: 0px 0px 10px rgba(13, 110, 253, 0.4);
+    background-color: white;
 }
 
 .search-item>button {
@@ -130,6 +144,7 @@ input::-webkit-inner-spin-button {
     font-weight: 700;
     font-size: 60px;
     margin: 0px;
+    font-family: 'Poppins', sans-serif!important;
 }
 
 .order-btn {
@@ -138,10 +153,6 @@ input::-webkit-inner-spin-button {
     width: 200px;
     font-size: 18px!important;
     font-weight: 600!important;
-}
-
-.search-item:hover {
-    box-shadow: 0px 0px 10px rgba(13, 110, 253,0.4);
 }
 
 .bg-design {
@@ -190,14 +201,7 @@ input::-webkit-inner-spin-button {
 
 @keyframes reveal-rotate {
     from {
-        opacity: 0;
-        transform: perspective(300px) rotateX(-30deg);
-        box-shadow: 1px 10px 5px rgba(100, 100, 100, 0.5);
-    }
-
-    to {
-        opacity: 1;
-        transform: perspective(1000px) rotateX(0deg);
+        background-color: white;
     }
 }
 

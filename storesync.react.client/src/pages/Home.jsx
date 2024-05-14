@@ -18,9 +18,12 @@ const Home = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [debtor, setDebtor] = useState('');
     const [time, setTime] = useState(new Date());
-    const [salesForTheDay, setSalesForTheDay] = useState(0);
+    const [salesForTheDay, setSalesForTheDay] = useState('Calculating...');
     const [total, setTotal] = useState(0);
     const inputRef = useRef(null);
+    const [temperature, setTemperature] = useState('Obtaining weather info');
+    const [location, setLocation] = useState('Obtaining location info');
+    const [weatherIcon, setWeatherIcon] = useState(null);
 
     useEffect(() => {
         const handleKeyDown = (event) => {
@@ -95,6 +98,35 @@ const Home = () => {
         else setTotal(newTotal);
 
     }, [total, purchases])
+
+    useEffect(() => {
+        const interval = setInterval(async () => {
+            try {
+                const { data } = await axios.get('https://www.accuweather.com/en/ph/philippines-weather');
+
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(data, 'text/html');
+
+                const spanElement = doc.querySelector('span.recent-location-temp');
+                const spanText = spanElement ? spanElement.textContent : 'Error';
+
+                const locationElement = doc.querySelector('div.recent-location-name');
+                const location = locationElement ? locationElement.textContent : 'Error';
+
+                const locationIconElement = doc.querySelector('img.recent-location-icon');
+                const icon = locationIconElement ? `https://www.accuweather.com/${locationIconElement.getAttribute('src')}` : null;
+
+                setTemperature(spanText);
+                setLocation(location);
+                setWeatherIcon(icon);
+            } catch {
+                setTemperature('Unable to get weather info');
+                setLocation('Unable to get location info');
+            }
+        }, 10000);
+
+        return () => clearInterval(interval);
+    }, []);
 
     const closeModal = () => setIsModalOpen(false);
 
@@ -276,10 +308,10 @@ const Home = () => {
     const getSalesForTheDay = () => {
         axios.get(`${BASE_URL}/Purchase/GetSalesForTheDay`)
             .then(response => {
-                setSalesForTheDay(response.data);
+                setSalesForTheDay(`Php ${setDigitFormat(response.data)}`);
             })
             .catch(error => {
-                setSalesForTheDay(0);
+                setSalesForTheDay('Connection error');
             });
     }
 
@@ -357,13 +389,24 @@ const Home = () => {
                                         <div className={time.getSeconds() < sec ? "rounded-pill counter" : "rounded-pill counter active"} key={sec}/>
                                     )) }
                                 </div>
-                                <h1>
+                                <h1 className="mt-3">
                                     {formatDate(time) }
                                 </h1>
                                 <div className="sales-day mt-5">
-                                    <h1 className="fs-1 text-white">Php {setDigitFormat(salesForTheDay)}</h1>
+                                    <h1 className="fs-1 text-white">{salesForTheDay}</h1>
                                     <small className="text-white">Sales for today</small>
                                 </div>
+                                {weatherIcon ? (
+                                    <a className="sales-day ms-0" href="https://www.accuweather.com/en/ph/philippines-weather">
+                                        <div className="d-flex flex-row justify-content-center align-items-center">
+                                            <img src={weatherIcon} className="weather-icon me-2 mb-1" alt=""/>
+                                            <h5 className="mb-0">{temperature}</h5>
+                                        </div>
+                                        <small className="text-white">{location}</small>
+                                    </a>
+                                ) : (
+                                        <a className="sales-day ms-0" href="https://www.accuweather.com/en/ph/philippines-weather">Obtaining weather data</a>
+                                )}
                             </div>
                     )}
                 </div>
@@ -372,7 +415,7 @@ const Home = () => {
                 <div>
                     <input type="text" value={searchText} onChange={handleSearchTextChanged} onMouseDown={() => setSearchText('')} className="form-control focusable" placeholder="Search an item or scan barcode..."></input>
                     {searchedProduct && searchedProduct.map(p => (
-                        <div className="d-flex flex-column search-item mt-3" key={p.id}>
+                        <div className="d-flex flex-column search-item" key={p.id}>
                             <button onClick={handleTap} value={p.id} className="btn">
                                 <div className="d-flex flex-row non-clickable">
                                     <div className="d-flex flex-column align-items-start">

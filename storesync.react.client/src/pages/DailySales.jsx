@@ -103,9 +103,9 @@ const DailySales = () => {
                     </div>
                 </div>
                 <div className="dsl p-2">
-                    <div class="form-check form-switch">
-                        <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" value={includeDebts} onChange={handleIncludeDebtsChanged} />
-                        <label class="form-check-label text-secondary mb-3" for="flexSwitchCheckDefault">Include debts and payments</label>
+                    <div className="form-check form-switch">
+                        <input className="form-check-input" type="checkbox" id="flexSwitchCheckDefault" value={includeDebts} onChange={handleIncludeDebtsChanged} />
+                        <label className="form-check-label text-secondary mb-3" htmlFor="flexSwitchCheckDefault">Include debts and payments</label>
                     </div>
                     {getRecords().map(record => (
                         <Link key={record.date} to={`/dashboard/${record.date}`} className={includeDebts ? "d-flex flex-column w-100 entry" : "d-flex flex-row w-100 entry" }>
@@ -113,10 +113,7 @@ const DailySales = () => {
                             {includeDebts ? (
                                 <>
                                     <div className="d-flex flex-row">
-                                        Normal sale:
-                                        <strong className="ms-auto">
-                                            {setDigitFormat(record.sale)}
-                                        </strong>
+                                        Normal sale: <strong className="ms-auto">{setDigitFormat(record.sale)}</strong>
                                     </div>
                                     <div className="d-flex flex-row text-success">
                                         Payment:

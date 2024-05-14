@@ -1,6 +1,5 @@
 import axios from 'axios';
-import React, { useEffect, useRef, useState } from "react";
-import { BsArrowDown, BsArrowReturnLeft, BsArrowUp, BsReceipt } from 'react-icons/bs';
+import { useEffect, useRef, useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 import { BASE_URL } from '../../utils/constants';
@@ -28,6 +27,9 @@ const Home = () => {
     useEffect(() => {
         const handleKeyDown = (event) => {
             if (!document.activeElement.classList.contains('focusable')) {
+                if (event.key === 'Enter') {
+                    setBarcode('');
+                }
                 inputRef.current.focus();
             }
         };
@@ -57,6 +59,7 @@ const Home = () => {
     }, [purchases, searchText, payment, barcode]);
 
     useEffect(() => {
+        console.log(barcode);
         setChange(payment - getTotal());
     }, [payment, barcode, purchases]);
 
@@ -150,6 +153,9 @@ const Home = () => {
             .then(response => {
                 addPurchase(response.data);
                 setBarcode('');
+            })
+            .catch(error => {
+                // FALLTHROUGH
             });
     }
 
@@ -249,9 +255,7 @@ const Home = () => {
             setPurchases([]);
             setPayment('');
             setSearchText('');
-        } catch (error) {
-            console.log(error);
-
+        } catch {
             toast.error('Something went wrong. Contact administrator');
         }
     }
@@ -276,9 +280,7 @@ const Home = () => {
                 setPurchases([]);
                 setPayment('');
                 setSearchText('');
-            } catch (error) {
-                console.log(error);
-
+            } catch {
                 toast.error('Something went wrong. Contact administrator');
             }
         }

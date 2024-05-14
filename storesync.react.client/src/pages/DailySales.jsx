@@ -64,7 +64,7 @@ const DailySales = () => {
             };
         });
 
-        var outstandingDebt = records.reduce((debt, rec) => {
+        let outstandingDebt = records.reduce((debt, rec) => {
             return debt + rec.debt - rec.payment;
         }, 0);
 

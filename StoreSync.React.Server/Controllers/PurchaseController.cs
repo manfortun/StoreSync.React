@@ -315,6 +315,27 @@ public class PurchaseController : ControllerBase
         return Ok(dailySales);
     }
 
+    [HttpGet("GetSalesForTheDay")]
+    public IActionResult GetSalesForTheDay()
+    {
+        var currentDate = DateTime.Now.Date;
+
+        var sales = _unitOfWork.Sales.GetAll(s => s.DateOfPurchase.Date == currentDate);
+
+        double total = 0;
+
+        foreach (var sale in sales)
+        {
+            foreach (var purchase in sale.Purchases)
+            {
+                var price = _unitOfWork.Prices.Get(purchase.ProductId, sale.DateOfPurchase);
+                total += price.Value * purchase.Count;
+            }
+        }
+
+        return Ok(total);
+    }
+
     [HttpPost]
     public IActionResult CreateNewSale(SalesWrite sales)
     {

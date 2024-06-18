@@ -53,10 +53,9 @@ public class ProductController : ControllerBase
         {
             Id = product.Id,
             Name = product.Name,
-            Subtitle = product.Subtitle
+            Subtitle = product.Subtitle,
+            Price = _unitOfWork.Prices.Get(product.Id)?.Value ?? 0
         };
-
-        productMapped.Price = _unitOfWork.Prices.Get(product.Id)?.Value ?? 0;
 
         return Ok(productMapped);
     }
@@ -75,7 +74,6 @@ public class ProductController : ControllerBase
             {
                 var name = p.Name.ToSimpleString();
                 var subtitle = p.Subtitle.ToSimpleString();
-                var searchValue = $"{name}{subtitle}";
 
                 var matchScore = searchString.Sum(word =>
                 {

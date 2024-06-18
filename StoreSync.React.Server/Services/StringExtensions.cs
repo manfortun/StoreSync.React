@@ -6,6 +6,6 @@ public static class StringExtensions
     {
         if (string.IsNullOrEmpty(value)) return string.Empty;
 
-        return string.Join(" ", value.ToLower().Split(' '));
+        return string.Join("", value.ToLower().Split(' '));
     }
 }

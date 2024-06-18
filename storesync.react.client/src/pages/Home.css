@@ -162,9 +162,17 @@ input::-webkit-inner-spin-button {
     background-position: center;
 }
 
+.counter-div {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 6px;
+    height: 6px;
+    margin: 1px;
+}
+
 .counter {
     color: transparent;
-    margin: 1px;
     width: 4px;
     height: 4px;
     border-radius: 50%;
@@ -174,6 +182,8 @@ input::-webkit-inner-spin-button {
 }
 
 .counter.active {
+    width: 5px;
+    height: 5px;
     opacity: 1;
 }
 

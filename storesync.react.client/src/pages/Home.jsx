@@ -17,12 +17,8 @@ const Home = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [debtor, setDebtor] = useState('');
     const [time, setTime] = useState(new Date());
-    const [salesForTheDay, setSalesForTheDay] = useState('Calculating...');
     const [total, setTotal] = useState(0);
     const inputRef = useRef(null);
-    const [temperature, setTemperature] = useState('Obtaining weather info');
-    const [location, setLocation] = useState('Obtaining location info');
-    const [weatherIcon, setWeatherIcon] = useState(null);
 
     useEffect(() => {
         const handleKeyDown = (event) => {
@@ -44,13 +40,16 @@ const Home = () => {
     useEffect(() => {
         if (searchText.length <= 0) return setSearchedProduct(null);
 
-        axios.get(`${BASE_URL}/Product/Search/${searchText}`)
-            .then(response => {
+        const fetchProduct = async () => {
+            try {
+                const response = await axios.get(`${BASE_URL}/Product/Search/${searchText}`);
                 setSearchedProduct(response.data);
-            })
-            .catch(() => {
+            } catch {
                 setSearchedProduct(null);
-            });
+            }
+        }
+
+        fetchProduct();
     }, [searchText]);
 
     useEffect(() => {
@@ -59,7 +58,6 @@ const Home = () => {
     }, [purchases, searchText, payment, barcode]);
 
     useEffect(() => {
-        console.log(barcode);
         setChange(payment - getTotal());
     }, [payment, barcode, purchases]);
 
@@ -72,117 +70,50 @@ const Home = () => {
     }, []);
 
     useEffect(() => {
-        const interval = setInterval(() => {
-            getSalesForTheDay();
-        }, 10000);
-
-        return () => clearInterval(interval);
-    }, []);
-
-    useEffect(() => {
-        const newTotal = getTotal();
-        const diff = newTotal - total;
-        const abs = Math.abs(diff);
-        const mult = diff < 0 ? -1 : 1;
-
-        if (abs > 100.01) setTotal(total + 90.01 * mult);
-        else if (abs > 90.01) setTotal(total + 80.01 * mult);
-        else if (abs > 80.01) setTotal(total + 70.01 * mult);
-        else if (abs > 70.01) setTotal(total + 60.01 * mult);
-        else if (abs > 60.01) setTotal(total + 50.01 * mult);
-        else if (abs > 50.01) setTotal(total + 40.01 * mult);
-        else if (abs > 40.01) setTotal(total + 30.01 * mult);
-        else if (abs > 30.01) setTotal(total + 20.01 * mult);
-        else if (abs > 20.01) setTotal(total + 10.01 * mult);
-        else if (abs > 10.01) setTotal(total + 9.01 * mult);
-        else if (abs > 5.01) setTotal(total + 2.01 * mult);
-        else if (abs > 1.01) setTotal(total + 0.10 * mult);
-        else if (abs > 0.01) setTotal(total + 0.01 * mult);
-        else setTotal(newTotal);
-
+        setTotal(getTotal());
     }, [total, purchases])
-
-    useEffect(() => {
-        const interval = setInterval(async () => {
-            try {
-                const { data } = await axios.get('https://www.accuweather.com/en/ph/philippines-weather');
-
-                const parser = new DOMParser();
-                const doc = parser.parseFromString(data, 'text/html');
-
-                const spanElement = doc.querySelector('span.recent-location-temp');
-                const spanText = spanElement ? spanElement.textContent : 'Error';
-
-                const locationElement = doc.querySelector('div.recent-location-name');
-                const location = locationElement ? locationElement.textContent : 'Error';
-
-                const locationIconElement = doc.querySelector('img.recent-location-icon');
-                const icon = locationIconElement ? `https://www.accuweather.com/${locationIconElement.getAttribute('src')}` : null;
-
-                setTemperature(spanText);
-                setLocation(location);
-                setWeatherIcon(icon);
-            } catch {
-                setTemperature('Unable to get weather info');
-                setLocation('Unable to get location info');
-            }
-        }, 10000);
-
-        return () => clearInterval(interval);
-    }, []);
 
     const closeModal = () => setIsModalOpen(false);
 
     const handlePaymentChange = (event) => {
         const newPayment = parseFloat(event.target.value);
-        if (newPayment > 99999) return;
-        setPayment(newPayment);
+        if (newPayment <= 99999) {
+            setPayment(newPayment);
+        }
     }
 
-    const setDigitFormat = (value) => {
-        return value.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-    }
+    const setDigitFormat = (value) => value.toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
-    const handleTap = (event) => {
+    const handleTap = async (event) => {
         const newBarcode = event.target.value;
         setBarcode(newBarcode);
 
         if (newBarcode.length < 1) return;
 
-        axios.get(`${BASE_URL}/Product/${newBarcode}`)
-            .then(response => {
-                addPurchase(response.data);
-                setBarcode('');
-            })
-            .catch(error => {
-                // FALLTHROUGH
-            });
-    }
+        try {
+            const response = await axios.get(`${BASE_URL}/Product/${newBarcode}`);
+            addPurchase(response.data);
+            setBarcode('');
+        } catch {
+            // FALLTHROUGH
+        }
+    };
 
     const addPurchase = (purchase) => {
-        const existingIndex = purchases.findIndex(item => item.id == purchase.id);
+        const existingIndex = purchases.findIndex(item => item.id === purchase.id);
 
         if (existingIndex !== -1) {
-            const updateClassList = [...purchases];
-            if (isNaN(updateClassList[existingIndex].count)) {
-                updateClassList[existingIndex].count = 0;
-            }
-
-            updateClassList[existingIndex].count += 1;
-            setPurchases(updateClassList);
+            const updatedClassList = [...purchases];
+            updatedClassList[existingIndex].count = (updatedClassList[existingIndex].count || 0) + 1;
+            setPurchases(updatedClassList);
         } else {
-            setPurchases(prevList => [...prevList, { name: purchase.name, count: 1, price: purchase.price, subtitle: purchase.subtitle, id: purchase.id }]);
+            setPurchases(prevList => [...prevList, { ...purchase, count: 1}]);
         }
     }
 
     const handlePurchaseCountChange = (id, event) => {
-        const existingIndex = purchases.findIndex(p => p.id === id);
-
-        if (existingIndex !== -1) {
-            const updatedList = [...purchases];
-            updatedList[existingIndex].count = parseInt(event.target.value, 10);
-            setPurchases(updatedList);
-        }
+        const updatedList = purchase.map(item => item.id === id ? { ...item, count: parseInt(event.target.value, 10) } : item);
+        setPurchases(updatedList);
     }
 
     const handlePurchaseConfirmed = (id, event) => {
@@ -191,36 +122,23 @@ const Home = () => {
 
         const value = event.target.value;
 
-        if (value.length <= 0 || value === '0') {
-            const existingIndex = purchases.findIndex(p => p.id === id);
-            if (existingIndex !== -1) {
-                const updatedList = purchases.filter(p => p.id !== id);
-                setPurchases(updatedList);
-            }
+        if (!value || value === '0') {
+            setPurchases(purchases.filter(p => p.id !== id));
         }
     }
 
-    const getTotal = () => {
-        return purchases.reduce((total, item) => total + (isNaN(item.count) ? 0 : item.count) * item.price, 0);
-    }
+    const getTotal = () => purchases.reduce((total, item) => total + ((item.count || 0) * item.price), 0);
 
     const handleSearchTextChanged = (event) => {
-        const value = event.target.value;
-        setSearchText(value);
+        setSearchText(event.target.value);
     }
 
     const getProductTotal = (id) => {
-        const existingIndex = purchases.findIndex(p => p.id === id);
-
-        if (existingIndex !== -1) {
-            const p = purchases[existingIndex];
-            return p.count * p.price;
-        }
-
-        return 0;
+        const product = purchases.find(p => p.id === id);
+        return product ? (product.count * product.price) : 0;
     }
 
-    const clearPurchases = (event) => {
+    const clearPurchases = () => {
         if (confirmDelete === true) {
             setPurchases([]);
             setPayment('');
@@ -233,9 +151,7 @@ const Home = () => {
     const handleSavePurchases = async (event) => {
         event.preventDefault();
 
-        let filteredPurchases = purchases.filter((p) => {
-            return p.count > 0
-        });
+        const filteredPurchases = purchases.filter(p => p.count > 0);
 
         if (filteredPurchases.length < 1) {
             setPurchases([]);
@@ -243,7 +159,7 @@ const Home = () => {
             return;
         }
 
-        const newSalesData = filteredPurchases.map((purchase) => ({
+        const newSalesData = filteredPurchases.map(purchase => ({
             productid: purchase.id,
             count: purchase.count
         }));
@@ -263,59 +179,41 @@ const Home = () => {
     const handleDebtPurchase = async (event) => {
         event.preventDefault();
 
-        if (debtor.length < 1) {
+        if (!debtor) {
             setIsModalOpen(true);
-        } else {
-            const newSalesData = purchases.map((purchase) => ({
-                productid: purchase.id,
-                count: purchase.count
-            }));
-
-            try {
-                await axios.post(`${BASE_URL}/Debt`, {
-                    debtorName: debtor,
-                    debt: { purchases: newSalesData }
-                });
-                toast.success(`Debt was charged successfully to ${debtor}.`);
-                setPurchases([]);
-                setPayment('');
-                setSearchText('');
-            } catch {
-                toast.error('Something went wrong. Contact administrator');
-            }
+            return;
         }
-    }
+
+        const newSalesData = purchases.map(purchase => ({
+            productid: purchase.id,
+            count: purchase.count
+        }));
+
+        try {
+            await axios.post(`${BASE_URL}/Debt`, {
+                debtorName: debtor,
+                debt: { purchases: newSalesData }
+            });
+
+            toast.success(`Debt was charged successfully to ${debtor}.`);
+            setPurchases([]);
+            setPayment('');
+            setSearchText('');
+        } catch {
+            toast.error('Something went wrong. Contact administrator.');
+        }
+    };
 
     const onDebtorSelected = (debtorName) => {
-        if (debtorName.length < 1) return;
+        if (debtorName) {
+            setDebtor(debtorName);
+            setIsModalOpen(false);
+        }
+    };
 
-        setIsModalOpen(false);
-        setDebtor(debtorName);
-    }
+    const formatDate = (date) => new Intl.DateTimeFormat('en-GB', { weekday: 'long', day: 'numeric', month: 'long' }).format(new Date(date));
 
-    const formatDate = (date) => {
-        const options = {
-            weekday: 'long',
-            day: 'numeric',
-            month: 'long'
-        };
-
-        return new Intl.DateTimeFormat('en-GB', options).format(new Date(date));
-    }
-
-    const formatTime = (date) => {
-        return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true }).replace(/\s[AP]M/, '');
-    }
-
-    const getSalesForTheDay = () => {
-        axios.get(`${BASE_URL}/Purchase/GetSalesForTheDay`)
-            .then(response => {
-                setSalesForTheDay(`Php ${setDigitFormat(response.data)}`);
-            })
-            .catch(error => {
-                setSalesForTheDay('Connection error');
-            });
-    }
+    const formatTime = (date) => date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true }).replace(/\s[AP]M/, '');
 
     return (
         <div className="d-flex flex-column flex-lg-row p-4 topdiv mb-5">
@@ -388,27 +286,14 @@ const Home = () => {
                                 </strong>
                                 <div className="d-flex flex-row justify-content-center align-items-center w-100">
                                     {Array.from({ length: 60 }, (_, index) => index).map(sec => (
-                                        <div className={time.getSeconds() < sec ? "rounded-pill counter" : "rounded-pill counter active"} key={sec}/>
+                                        <div className="counter-div" key={sec }>
+                                            <div className={time.getSeconds() < sec ? "rounded-pill counter" : "rounded-pill counter active"}/>
+                                        </div>
                                     )) }
                                 </div>
                                 <h1 className="mt-3">
                                     {formatDate(time) }
                                 </h1>
-                                <div className="sales-day mt-5">
-                                    <h1 className="fs-1 text-white">{salesForTheDay}</h1>
-                                    <small className="text-white">Sales for today</small>
-                                </div>
-                                {weatherIcon ? (
-                                    <a className="sales-day ms-0" href="https://www.accuweather.com/en/ph/philippines-weather">
-                                        <div className="d-flex flex-row justify-content-center align-items-center">
-                                            <img src={weatherIcon} className="weather-icon me-2 mb-1" alt=""/>
-                                            <h5 className="mb-0">{temperature}</h5>
-                                        </div>
-                                        <small className="text-white">{location}</small>
-                                    </a>
-                                ) : (
-                                        <a className="sales-day ms-0" href="https://www.accuweather.com/en/ph/philippines-weather">Obtaining weather data</a>
-                                )}
                             </div>
                     )}
                 </div>

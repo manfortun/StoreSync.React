@@ -2,9 +2,6 @@
 using StoreSync.DTO;
 using StoreSync.React.Server.DataAccess;
 using StoreSync.React.Server.Models;
-using System.Numerics;
-using System.Reflection.Metadata.Ecma335;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace StoreSync.React.Server.Controllers;
 
@@ -213,104 +210,16 @@ public class PurchaseController : ControllerBase
     public IActionResult GetDailySales()
     {
         var sales = _unitOfWork.Sales.GetAll();
-
-        var dailySales = new DailySaleRead();
-
-        var minDate = sales.Min(s => s.DateOfPurchase.Date);
-        while (minDate <= DateTime.Now.Date)
-        {
-            dailySales.Sales.Add(minDate, 0);
-            dailySales.Payments.Add(minDate, 0);
-            dailySales.Debts.Add(minDate, 0);
-            minDate = minDate.AddDays(1);
-        }
-
-        double grandTotal = 0;
-        foreach (var sale in sales)
-        {
-            if (!string.IsNullOrEmpty(sale.DebtId))
-            {
-                foreach (var purchase in sale.Purchases)
-                {
-                    var price = _unitOfWork.Prices.Get(purchase.ProductId, sale.DateOfPurchase)?.Value ?? 0;
-                    var total = price * purchase.Count;
-
-                    if (!dailySales.Debts.ContainsKey(sale.DateOfPurchase.Date))
-                    {
-                        dailySales.Debts.Add(sale.DateOfPurchase.Date, 0);
-                    }
-
-                    dailySales.Debts[sale.DateOfPurchase.Date] += total;
-                }
-            }
-            else
-            {
-                foreach (var purchase in sale.Purchases)
-                {
-                    var price = _unitOfWork.Prices.Get(purchase.ProductId, sale.DateOfPurchase)?.Value ?? 0;
-                    var total = price * purchase.Count;
-                    grandTotal += total;
-
-                    if (!dailySales.Sales.ContainsKey(sale.DateOfPurchase.Date))
-                    {
-                        dailySales.Sales.Add(sale.DateOfPurchase.Date, 0);
-                    }
-
-                    dailySales.Sales[sale.DateOfPurchase.Date] += total;
-                }
-            }
-        }
-
+        var prices = _unitOfWork.Prices.GetAll();
         var payments = _unitOfWork.DebtPayments.GetAll();
 
-        foreach (var payment in payments)
-        {
-            if (!dailySales.Payments.ContainsKey(payment.DateCreated.Date))
-            {
-                dailySales.Payments.Add(payment.DateCreated.Date, 0);
-            }
-
-            if (double.IsNegative(payment.Payment))
-            {
-                dailySales.Debts[payment.DateCreated.Date] += Math.Abs(payment.Payment);
-            }
-            else
-            {
-                dailySales.Payments[payment.DateCreated.Date] += payment.Payment;
-                grandTotal += payment.Payment;
-            }
-        }
+        var dailySales = this.InitializeDailySalesRead(sales);
+        double grandTotal = this.CalculateSalesAndDebts(sales, prices, dailySales);
+        grandTotal += this.CalculatePayments(payments, dailySales);
 
         dailySales.NoOfDays = dailySales.Sales.Keys.Count;
-
-        double average = grandTotal / dailySales.NoOfDays;
-        string unit = string.Empty;
-        if (average >= 1000000)
-        {
-            average /= 1000000;
-            unit = "M";
-        }
-        else if (average >= 1000)
-        {
-            average /= 1000;
-            unit = "K";
-        }
-
-        dailySales.AverageSale = $"{Math.Round(average, 1)}{unit}";
-
-        unit = string.Empty;
-        if (grandTotal >= 1000000)
-        {
-            grandTotal /= 1000000;
-            unit = "M";
-        }
-        else if (grandTotal >= 1000)
-        {
-            grandTotal /= 1000;
-            unit = "K";
-        }
-
-        dailySales.TotalSales = $"{Math.Round(grandTotal, 1)}{unit}";
+        dailySales.AverageSale = this.FormatAmount(grandTotal / dailySales.NoOfDays);
+        dailySales.TotalSales = this.FormatAmount(grandTotal);
 
         return Ok(dailySales);
     }
@@ -367,5 +276,107 @@ public class PurchaseController : ControllerBase
         _unitOfWork.Save();
 
         return Ok();
+    }
+
+    private DailySaleRead InitializeDailySalesRead(IEnumerable<Sale> sales)
+    {
+        var dailySales = new DailySaleRead();
+        var minDate = sales.Min(s => s.DateOfPurchase.Date);
+        while (minDate <= DateTime.Now.Date)
+        {
+            dailySales.Sales.Add(minDate, 0);
+            dailySales.Payments.Add(minDate, 0);
+            dailySales.Debts.Add(minDate, 0);
+            minDate = minDate.AddDays(1);
+        }
+
+        return dailySales;
+    }
+
+    private double CalculateSalesAndDebts(IEnumerable<Sale> sales, IEnumerable<Price> prices, DailySaleRead dailySales)
+    {
+        double grandTotal = 0;
+        foreach (var sale in sales)
+        {
+            if (!string.IsNullOrEmpty(sale.DebtId))
+            {
+                foreach (var purchase in sale.Purchases)
+                {
+                    var price = prices
+                        .Where(p => p.Id == purchase.ProductId && p.DateCreated <= sale.DateOfPurchase)
+                        .MaxBy(p => p.DateCreated)?.Value ?? 0;
+
+                    if (!dailySales.Debts.ContainsKey(sale.DateOfPurchase.Date))
+                    {
+                        dailySales.Debts.Add(sale.DateOfPurchase.Date, 0);
+                    }
+
+                    dailySales.Debts[sale.DateOfPurchase.Date] += price * purchase.Count;
+                }
+            }
+            else
+            {
+                foreach (var purchase in sale.Purchases)
+                {
+                    var price = prices
+                        .Where(p => p.Id == purchase.ProductId && p.DateCreated <= sale.DateOfPurchase)
+                        .MaxBy(p => p.DateCreated)?.Value ?? 0;
+
+                    var total = price * purchase.Count;
+                    grandTotal += total;
+
+                    if (!dailySales.Sales.ContainsKey(sale.DateOfPurchase.Date))
+                    {
+                        dailySales.Sales.Add(sale.DateOfPurchase.Date, 0);
+                    }
+
+                    dailySales.Sales[sale.DateOfPurchase.Date] += total;
+                }
+            }
+        }
+
+        return grandTotal;
+    }
+
+    private double CalculatePayments(IEnumerable<DebtPayment> payments, DailySaleRead dailySales)
+    {
+        double grandTotal = 0;
+
+        foreach (var payment in payments)
+        {
+            if (!dailySales.Payments.ContainsKey(payment.DateCreated.Date))
+            {
+                dailySales.Payments.Add(payment.DateCreated.Date, 0);
+            }
+
+            if (double.IsNegative(payment.Payment))
+            {
+                dailySales.Debts[payment.DateCreated.Date] += Math.Abs(payment.Payment);
+            }
+            else
+            {
+                dailySales.Payments[payment.DateCreated.Date] += payment.Payment;
+                grandTotal += payment.Payment;
+            }
+        }
+
+        return grandTotal;
+    }
+
+    private string FormatAmount(double amount)
+    {
+        string unit = string.Empty;
+        if (amount >= 1000000)
+        {
+            amount /= 1000000;
+            unit = "M";
+        }
+        else if (amount >= 1000)
+        {
+            amount /= 1000;
+            unit = "K";
+        }
+
+        return $"{Math.Round(amount, 1)}{unit}";
     }
 }

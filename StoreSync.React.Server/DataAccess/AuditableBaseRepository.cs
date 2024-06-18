@@ -16,8 +16,7 @@ public class AuditableBaseRepository<TEntity> : BaseRepository<TEntity> where TE
         }
 
         return entities
-            .OrderByDescending(e => e.DateCreated)
-            .FirstOrDefault();
+            .MaxBy(e => e.DateCreated);
     }
 
     public override void Insert(TEntity entity)

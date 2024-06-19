@@ -298,39 +298,24 @@ public class PurchaseController : ControllerBase
         double grandTotal = 0;
         foreach (var sale in sales)
         {
-            if (!string.IsNullOrEmpty(sale.DebtId))
+            bool isDebt = !string.IsNullOrEmpty(sale.DebtId);
+            var saleDate = sale.DateOfPurchase.Date;
+
+            foreach (var purchase in sale.Purchases)
             {
-                foreach (var purchase in sale.Purchases)
+                var price = prices
+                    .Where(p => p.Id == purchase.ProductId && p.DateCreated <= sale.DateOfPurchase)
+                    .MaxBy(p => p.DateCreated)?.Value ?? 0;
+                var total = price * purchase.Count;
+
+                if (isDebt)
                 {
-                    var price = prices
-                        .Where(p => p.Id == purchase.ProductId && p.DateCreated <= sale.DateOfPurchase)
-                        .MaxBy(p => p.DateCreated)?.Value ?? 0;
-
-                    if (!dailySales.Debts.ContainsKey(sale.DateOfPurchase.Date))
-                    {
-                        dailySales.Debts.Add(sale.DateOfPurchase.Date, 0);
-                    }
-
-                    dailySales.Debts[sale.DateOfPurchase.Date] += price * purchase.Count;
+                    this.AddToRecord(dailySales.Debts, saleDate, total);
                 }
-            }
-            else
-            {
-                foreach (var purchase in sale.Purchases)
+                else
                 {
-                    var price = prices
-                        .Where(p => p.Id == purchase.ProductId && p.DateCreated <= sale.DateOfPurchase)
-                        .MaxBy(p => p.DateCreated)?.Value ?? 0;
-
-                    var total = price * purchase.Count;
+                    this.AddToRecord(dailySales.Sales, saleDate, total);
                     grandTotal += total;
-
-                    if (!dailySales.Sales.ContainsKey(sale.DateOfPurchase.Date))
-                    {
-                        dailySales.Sales.Add(sale.DateOfPurchase.Date, 0);
-                    }
-
-                    dailySales.Sales[sale.DateOfPurchase.Date] += total;
                 }
             }
         }
@@ -378,5 +363,15 @@ public class PurchaseController : ControllerBase
         }
 
         return $"{Math.Round(amount, 1)}{unit}";
+    }
+
+    private void AddToRecord(Dictionary<DateTime, double> dic, DateTime saleDate, double total)
+    {
+        if (!dic.ContainsKey(saleDate))
+        {
+            dic.Add(saleDate, 0);
+        }
+
+        dic[saleDate] += total;
     }
 }

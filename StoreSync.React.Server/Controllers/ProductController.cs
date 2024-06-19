@@ -21,6 +21,7 @@ public class ProductController : ControllerBase
     public IActionResult GetAll()
     {
         var products = _unitOfWork.Products.GetAll();
+        var prices = _unitOfWork.Prices.GetAll();
 
         var productsMapped = new List<ProductRead>();
 
@@ -33,7 +34,10 @@ public class ProductController : ControllerBase
                 Subtitle = p.Subtitle
             };
 
-            newProduct.Price = _unitOfWork.Prices.Get(p.Id)?.Value ?? 0;
+            newProduct.Price = prices
+                .Where(price => price.Id == p.Id)
+                .MaxBy(price => price.DateCreated)?.Value ?? 0;
+
             productsMapped.Add(newProduct);
         }
 

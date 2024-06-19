@@ -52,6 +52,14 @@ const Home = () => {
     }, []);
 
     useEffect(() => {
+        const intervalId = setInterval(() => {
+            axios.get(`${BASE_URL}/Product/keep-alive`).catch(console.error);
+        }, 1 * 60 * 1000);
+
+        return () => clearInterval(intervalId);
+    });
+
+    useEffect(() => {
         if (searchText.length <= 0) return setSearchedProduct(null);
 
         const fetchProduct = async () => {

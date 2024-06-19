@@ -75,6 +75,12 @@ public class ProductController : ControllerBase
         return Ok(registeredBarcodes);
     }
 
+    [HttpGet("keep-alive")]
+    public IActionResult KeepAlive()
+    {
+        return Ok();
+    }
+
     [HttpGet("Search/{searchString}")]
     public IActionResult Search(string searchString)
     {

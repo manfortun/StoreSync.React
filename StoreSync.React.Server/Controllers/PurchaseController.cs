@@ -210,11 +210,10 @@ public class PurchaseController : ControllerBase
     public IActionResult GetDailySales()
     {
         var sales = _unitOfWork.Sales.GetAll();
-        var prices = _unitOfWork.Prices.GetAll();
         var payments = _unitOfWork.DebtPayments.GetAll();
 
         var dailySales = this.InitializeDailySalesRead(sales);
-        double grandTotal = this.CalculateSalesAndDebts(sales, prices, dailySales);
+        double grandTotal = this.CalculateSalesAndDebts(sales, dailySales);
         grandTotal += this.CalculatePayments(payments, dailySales);
 
         dailySales.NoOfDays = dailySales.Sales.Keys.Count;
@@ -293,15 +292,16 @@ public class PurchaseController : ControllerBase
         return dailySales;
     }
 
-    private double CalculateSalesAndDebts(IEnumerable<Sale> sales, IEnumerable<Price> prices, DailySaleRead dailySales)
+    private double CalculateSalesAndDebts(IEnumerable<Sale> sales, DailySaleRead dailySales)
     {
+        var prices = _unitOfWork.Prices.GetAll();
+        var purchases = _unitOfWork.Purchases.GetAll();
         double grandTotal = 0;
         foreach (var sale in sales)
         {
             bool isDebt = !string.IsNullOrEmpty(sale.DebtId);
             var saleDate = sale.DateOfPurchase.Date;
-
-            foreach (var purchase in sale.Purchases)
+            foreach (var purchase in purchases.Where(p => p.SaleId == sale.Id))
             {
                 var price = prices
                     .Where(p => p.Id == purchase.ProductId && p.DateCreated <= sale.DateOfPurchase)

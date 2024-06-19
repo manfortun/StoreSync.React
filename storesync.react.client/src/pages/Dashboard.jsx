@@ -36,7 +36,7 @@ const Dashboard = () => {
     }
 
     const weeklyLineGraph = () => {
-        const date = new Date();
+        const date = new Date(selectedDate);
         const startDate = new Date(date.setDate(selectedDate.getDate() - 6)).toLocaleString('sv');
         const endDate = selectedDate.toLocaleString('sv');
 

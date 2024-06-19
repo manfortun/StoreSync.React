@@ -18,7 +18,21 @@ const Home = () => {
     const [debtor, setDebtor] = useState('');
     const [time, setTime] = useState(new Date());
     const [total, setTotal] = useState(0);
+    const [registeredBarcodes, setRegisteredBarcodes] = useState([]);
     const inputRef = useRef(null);
+
+    useEffect(() => {
+        const getBarcodes = async () => {
+            try {
+                const response = await axios.get(`${BASE_URL}/Product/GetBarcodes`);
+                setRegisteredBarcodes(response.data);
+            } catch {
+                // FALLTHROUGH
+            }
+        }
+
+        getBarcodes();
+    }, []);
 
     useEffect(() => {
         const handleKeyDown = (event) => {
@@ -88,14 +102,14 @@ const Home = () => {
         const newBarcode = event.target.value;
         setBarcode(newBarcode);
 
-        if (newBarcode.length < 1) return;
+        if (!registeredBarcodes.includes(newBarcode)) return;
 
         try {
             const response = await axios.get(`${BASE_URL}/Product/${newBarcode}`);
             addPurchase(response.data);
             setBarcode('');
         } catch {
-            // FALLTHROUGH
+            setBarcode('');
         }
     };
 

@@ -64,6 +64,17 @@ public class ProductController : ControllerBase
         return Ok(productMapped);
     }
 
+    [HttpGet("GetBarcodes")]
+    public IActionResult GetBarcodes()
+    {
+        string[] registeredBarcodes = _unitOfWork.Products
+            .GetAll()
+            .Select(p => p.Id)
+            .ToArray();
+
+        return Ok(registeredBarcodes);
+    }
+
     [HttpGet("Search/{searchString}")]
     public IActionResult Search(string searchString)
     {

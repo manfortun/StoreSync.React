@@ -150,7 +150,7 @@ const Register = () => {
     }
 
     return (
-        <div className="d-flex flex-column justify-content-center align-items-center p-5 mb-5">
+        <div className="d-flex flex-column justify-content-center align-items-center p-5">
         <ToastContainer />
             <div className="main-div">
                 <div className="input-group mb-3">

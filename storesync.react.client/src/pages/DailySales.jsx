@@ -77,7 +77,7 @@ const DailySales = () => {
 
     return (
         (dailySales ? (
-            <div className="d-flex flex-column justify-content-start align-items-center pt-3 pb-5 overflow-y-auto">
+            <div className="d-flex flex-column justify-content-start align-items-center pt-3 overflow-y-auto">
                 <h3>Daily Sales</h3>
                 <div className="d-flex flex-row justify-content-center align-items-center p-3">
                     <div className="summary s-1">

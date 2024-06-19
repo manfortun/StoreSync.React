@@ -217,7 +217,7 @@ public class PurchaseController : ControllerBase
         grandTotal += this.CalculatePayments(payments, dailySales);
 
         dailySales.NoOfDays = dailySales.Sales.Keys.Count;
-        dailySales.AverageSale = this.FormatAmount(grandTotal / dailySales.NoOfDays);
+        dailySales.AverageSale = this.FormatAmount(grandTotal / Math.Max(dailySales.NoOfDays, 1));
         dailySales.TotalSales = this.FormatAmount(grandTotal);
 
         return Ok(dailySales);
@@ -280,13 +280,17 @@ public class PurchaseController : ControllerBase
     private DailySaleRead InitializeDailySalesRead(IEnumerable<Sale> sales)
     {
         var dailySales = new DailySaleRead();
-        var minDate = sales.Min(s => s.DateOfPurchase.Date);
-        while (minDate <= DateTime.Now.Date)
+
+        if (sales != null && sales.Any())
         {
-            dailySales.Sales.Add(minDate, 0);
-            dailySales.Payments.Add(minDate, 0);
-            dailySales.Debts.Add(minDate, 0);
-            minDate = minDate.AddDays(1);
+            var minDate = sales.Min(s => s.DateOfPurchase.Date);
+            while (minDate <= DateTime.Now.Date)
+            {
+                dailySales.Sales.Add(minDate, 0);
+                dailySales.Payments.Add(minDate, 0);
+                dailySales.Debts.Add(minDate, 0);
+                minDate = minDate.AddDays(1);
+            }
         }
 
         return dailySales;
@@ -329,18 +333,25 @@ public class PurchaseController : ControllerBase
 
         foreach (var payment in payments)
         {
-            if (!dailySales.Payments.ContainsKey(payment.DateCreated.Date))
-            {
-                dailySales.Payments.Add(payment.DateCreated.Date, 0);
-            }
+            var paymentDate = payment.DateCreated.Date;
 
             if (double.IsNegative(payment.Payment))
             {
-                dailySales.Debts[payment.DateCreated.Date] += Math.Abs(payment.Payment);
+                if (!dailySales.Debts.ContainsKey(paymentDate))
+                {
+                    dailySales.Debts.Add(paymentDate, 0);
+                }
+
+                dailySales.Debts[paymentDate] += Math.Abs(payment.Payment);
             }
             else
             {
-                dailySales.Payments[payment.DateCreated.Date] += payment.Payment;
+                if (!dailySales.Payments.ContainsKey(paymentDate))
+                {
+                    dailySales.Payments.Add(paymentDate, 0);
+                }
+
+                dailySales.Payments[paymentDate] += payment.Payment;
                 grandTotal += payment.Payment;
             }
         }

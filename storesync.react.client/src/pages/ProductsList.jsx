@@ -45,7 +45,7 @@ const ProductsList = () => {
     }
 
     return (
-        <div className="p-4 mb-5 overflow-y-auto">
+        <div className="p-4 overflow-y-auto">
         <ToastContainer />
             <div className="d-flex flex-column">
                 <h3 className="mb-1">Products List</h3>

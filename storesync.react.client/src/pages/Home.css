@@ -6,7 +6,17 @@
     display: flex;
     flex-direction: row;
     width: 100%;
-    height: 85vh;
+    height: 73vh;
+}
+
+.payment-change {
+    opacity: 0.3;
+    transition: all ease-in-out 0.27s;
+}
+
+.payment-change:focus-within,
+.payment-change:hover {
+    opacity: 1;
 }
 
 small {
@@ -119,18 +129,20 @@ input::-webkit-inner-spin-button {
 .search-item {
     animation-name: reveal-rotate;
     animation-duration: 1s;
-    border-radius: 8px;
+    border-radius: 20px;
     cursor: pointer;
-    transition: margin 0s, box-shadow 0.3s, background-color 0.3s ease-in-out;
+    border: 1px dashed transparent;
+    transition: margin 0s, box-shadow 0.3s, background-color 0.3s ease-in-out, border 0.3s;
 }
 
 .search-item:hover {
     box-shadow: 0px 0px 10px rgba(13, 110, 253, 0.4);
+    border: 1px dashed gray;
     background-color: white;
 }
 
 .search-item>button {
-    padding: 1.5rem;
+    padding: 1.2rem;
 }
 
 .search-item>button:active {

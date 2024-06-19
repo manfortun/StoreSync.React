@@ -168,7 +168,7 @@ const DebtsList = () => {
     }
 
     return (
-        <div className="d-flex flex-column justify-content-center align-items-center ps-2 pe-2 mb-5 topdiv">
+        <div className="d-flex flex-column justify-content-center align-items-center ps-2 pe-2 topdiv">
             <ToastContainer />
             {debtors.length > 0 ? (
                 <div className="top-div mt-4">

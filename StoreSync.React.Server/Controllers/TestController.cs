@@ -19,7 +19,7 @@ public class TestController : ControllerBase
     [HttpPost("GenerateSales/{count}")]
     public IActionResult GenerateSales(int count)
     {
-        var startDate = _unitOfWork.Sales.GetAll().Min(s => s.DateOfPurchase.Date);
+        var startDate = DateTime.Now.AddYears(-1);
         var endDate = DateTime.Now;
 
         int maxCountPerPurchase = 8;

@@ -79,7 +79,7 @@ const Home = () => {
 
     useEffect(() => {
         const intervalId = setInterval(() => {
-            axios.get(`${BASE_URL}/Product/keep-alive`).catch(console.error);
+            axios.get(`${BASE_URL}/Product/keep-alive`).then(() => console.log("Server is alive")).catch(console.error);
         }, 1 * 60 * 1000);
 
         return () => clearInterval(intervalId);
@@ -127,6 +127,8 @@ const Home = () => {
         const newPayment = parseFloat(event.target.value);
         if (newPayment <= 99999) {
             setPayment(newPayment);
+        } else {
+            setPayment('');
         }
     }
 
@@ -263,7 +265,7 @@ const Home = () => {
 
     const formatTime = (date) => date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true }).replace(/\s[AP]M/, '');
     return (
-        <div className="d-flex flex-column flex-lg-row p-4 topdiv mb-5">
+        <div className="d-flex flex-column flex-lg-row p-4 topdiv">
             <input type="number" className="number hidden-control" ref={inputRef} value={barcode} onChange={handleTap} inputMode="numeric"/>
             <ToastContainer />
             <DebtorModal isOpen={isModalOpen} onClose={closeModal} onDebtorSelected={onDebtorSelected} />
@@ -297,14 +299,14 @@ const Home = () => {
                         {purchases.length > 0 && (
                                 <div className="d-flex flex-column mt-auto p-2 pb-0">
                                     <div className="d-flex flex-lg-row flex-column mt-2 pb-3">
-                                        <div>
+                                        <div className="payment-change">
                                             <div className="d-flex flex-row mt-lg-auto align-items-center fs-3">
-                                                <span className="me-4">Payment:</span>
+                                                <span className="me-4 fs-5">Payment:</span>
                                                 <input type="number" value={payment} min={0} className="ms-auto form-control payment number focusable fs-3" inputMode="numeric" onChange={handlePaymentChange} disabled={purchases.length <= 0}></input>
                                             </div>
-                                            <div className="d-flex flex-row fs-3">
-                                                <span>Change:</span>
-                                                <span className="ms-auto">{isNaN(change) || change < 0 ? "---" : setDigitFormat(change)}</span>
+                                            <div className="d-flex flex-row align-items-center fs-3">
+                                                <span className="fs-5">Change:</span>
+                                                <span className="ms-auto me-3">{isNaN(change) || change < 0 ? "---" : setDigitFormat(change)}</span>
                                             </div>
                                         </div>
                                         <div className="ms-auto d-flex flex-column align-items-end">
@@ -312,7 +314,7 @@ const Home = () => {
                                             <small>Total</small>
                                         </div>
                                     </div>
-                                    <div className="d-flex flex-row pb-4">
+                                    <div className="d-flex flex-row pb-2">
                                         <button className="btn btn-sm btn-outline-danger me-1 order-btn" onClick={(event) => clearPurchases(event)}>{confirmDelete ? "Click to confirm" : "Delete Order"}</button>
                                         <button className="btn btn-sm btn-outline-warning me-1 me-md-3 ms-auto order-btn" onClick={handleDebtPurchase}>
                                             {debtor.length < 1 ? (
@@ -352,7 +354,7 @@ const Home = () => {
                         <div className="d-flex flex-column search-item" key={p.id}>
                             <button onClick={handleTap} value={p.id} className="btn">
                                 <div className="d-flex flex-row non-clickable">
-                                    <div className="d-flex flex-column align-items-start">
+                                    <div className="d-flex flex-column align-items-start text-start">
                                         <strong>{p.name}</strong>
                                         <small className="st text-primary">{p.subtitle}</small>
                                     </div>

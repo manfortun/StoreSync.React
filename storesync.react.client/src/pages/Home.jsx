@@ -57,7 +57,7 @@ const Home = () => {
         }, 1 * 60 * 1000);
 
         return () => clearInterval(intervalId);
-    });
+    }, []);
 
     useEffect(() => {
         if (searchText.length <= 0) return setSearchedProduct(null);

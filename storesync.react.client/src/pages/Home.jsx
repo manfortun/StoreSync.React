@@ -6,7 +6,28 @@ import { BASE_URL } from '../../utils/constants';
 import DebtorModal from '../modals/SelectDebtorModal';
 import './Home.css';
 
+import A from '../assets/A.jpg';
+import B from '../assets/B.jpg';
+import C from '../assets/C.jpg';
+import D from '../assets/D.jpg';
+import E from '../assets/E.jpg';
+import F from '../assets/F.jpg';
+import G from '../assets/G.jpg';
+import H from '../assets/H.jpg';
+import I from '../assets/I.jpg';
+import K from '../assets/K.jpg';
+import L from '../assets/L.jpg';
+import M from '../assets/M.jpg';
+import N from '../assets/N.jpg';
+import O from '../assets/O.jpg';
+import P from '../assets/P.jpg';
+import Q from '../assets/Q.jpg';
+import R from '../assets/R.jpg';
+import S from '../assets/S.jpg';
+
 const Home = () => {
+    const bgImages = [A,B,C,D,E,F,G,H,I,K,L,M,N,O,P,Q,R,S];
+    const [bgImage, setBgImage] = useState('');
     const [barcode, setBarcode] = useState('');
     const [payment, setPayment] = useState();
     const [change, setChange] = useState(0);
@@ -20,6 +41,11 @@ const Home = () => {
     const [total, setTotal] = useState(0);
     const [registeredBarcodes, setRegisteredBarcodes] = useState([]);
     const inputRef = useRef(null);
+
+    useEffect(() => {
+        const randomIndex = Math.floor(Math.random() * bgImages.length);
+        setBgImage(bgImages[randomIndex]);
+    }, [purchases]);
 
     useEffect(() => {
         const getBarcodes = async () => {
@@ -134,7 +160,7 @@ const Home = () => {
     }
 
     const handlePurchaseCountChange = (id, event) => {
-        const updatedList = purchase.map(item => item.id === id ? { ...item, count: parseInt(event.target.value, 10) } : item);
+        const updatedList = purchases.map(item => item.id === id ? { ...item, count: parseInt(event.target.value, 10) } : item);
         setPurchases(updatedList);
     }
 
@@ -236,14 +262,13 @@ const Home = () => {
     const formatDate = (date) => new Intl.DateTimeFormat('en-GB', { weekday: 'long', day: 'numeric', month: 'long' }).format(new Date(date));
 
     const formatTime = (date) => date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true }).replace(/\s[AP]M/, '');
-
     return (
         <div className="d-flex flex-column flex-lg-row p-4 topdiv mb-5">
             <input type="number" className="number hidden-control" ref={inputRef} value={barcode} onChange={handleTap} inputMode="numeric"/>
             <ToastContainer />
             <DebtorModal isOpen={isModalOpen} onClose={closeModal} onDebtorSelected={onDebtorSelected} />
             <div className="pb-3 pe-lg-3 pt-0 col-lg-9 d-lg-flex flex-column align-items-center">
-                <div className={purchases.length <= 0 ? "cashier d-flex flex-column bg-design" : "cashier d-flex flex-column"}>
+                <div className={purchases.length <= 0 ? "cashier d-flex flex-column bg-design" : "cashier d-flex flex-column"} style={purchases.length <= 0 ? {backgroundImage: `url(${bgImage})`} : {} }>
                 {purchases.length > 0 ? (
                     <>
                         <div className="purchase-list">
@@ -270,39 +295,39 @@ const Home = () => {
                             ))}
                         </div>
                         {purchases.length > 0 && (
-                            <div className="d-flex flex-column mt-auto p-4">
-                                <div className="d-flex flex-row mb-3">
-                                    <button className="btn btn-sm btn-outline-danger me-1 order-btn" onClick={(event) => clearPurchases(event)}>{confirmDelete ? "Click to confirm" : "Delete Order"}</button>
-                                    <button className="btn btn-sm btn-outline-warning me-1 me-md-3 ms-auto order-btn" onClick={handleDebtPurchase}>
-                                        {debtor.length < 1 ? (
-                                            `Save as debt`
-                                        ) : (
-                                            `Debt to ${debtor}`
-                                        )}
-                                    </button>
-                                    <button className="btn btn-sm btn-outline-primary order-btn" onClick={(event) => handleSavePurchases(event)}>Save Order</button>
-                                </div>
-                                <div className="d-flex flex-lg-row flex-column mt-4">
-                                    <div>
-                                        <div className="d-flex flex-row mt-lg-auto align-items-center fs-3">
-                                            <span className="me-4">Payment:</span>
-                                            <input type="number" value={payment} min={0} className="ms-auto form-control payment number focusable fs-3" inputMode="numeric" onChange={handlePaymentChange} disabled={purchases.length <= 0}></input>
+                                <div className="d-flex flex-column mt-auto p-2 pb-0">
+                                    <div className="d-flex flex-lg-row flex-column mt-2 pb-3">
+                                        <div>
+                                            <div className="d-flex flex-row mt-lg-auto align-items-center fs-3">
+                                                <span className="me-4">Payment:</span>
+                                                <input type="number" value={payment} min={0} className="ms-auto form-control payment number focusable fs-3" inputMode="numeric" onChange={handlePaymentChange} disabled={purchases.length <= 0}></input>
+                                            </div>
+                                            <div className="d-flex flex-row fs-3">
+                                                <span>Change:</span>
+                                                <span className="ms-auto">{isNaN(change) || change < 0 ? "---" : setDigitFormat(change)}</span>
+                                            </div>
                                         </div>
-                                        <div className="d-flex flex-row fs-3">
-                                            <span>Change:</span>
-                                            <span className="ms-auto">{isNaN(change) || change < 0 ? "---" : setDigitFormat(change)}</span>
-                                        </div>
-                                    </div>
                                         <div className="ms-auto d-flex flex-column align-items-end">
-                                        <span className="total">{setDigitFormat(total)}</span>
-                                        <small>Total</small>
+                                            <span className="total">{setDigitFormat(total)}</span>
+                                            <small>Total</small>
+                                        </div>
+                                    </div>
+                                    <div className="d-flex flex-row pb-4">
+                                        <button className="btn btn-sm btn-outline-danger me-1 order-btn" onClick={(event) => clearPurchases(event)}>{confirmDelete ? "Click to confirm" : "Delete Order"}</button>
+                                        <button className="btn btn-sm btn-outline-warning me-1 me-md-3 ms-auto order-btn" onClick={handleDebtPurchase}>
+                                            {debtor.length < 1 ? (
+                                                `Save as debt`
+                                            ) : (
+                                                `Debt to ${debtor}`
+                                            )}
+                                        </button>
+                                        <button className="btn btn-sm btn-outline-primary order-btn" onClick={(event) => handleSavePurchases(event)}>Save Order</button>
                                     </div>
                                 </div>
-                            </div>
                         )}
                     </>
                     ) : (
-                            <div className="d-flex flex-column align-items-center justify-content-center h-100 text-white">
+                            <div className="d-flex flex-column align-items-center justify-content-center h-100 idle-color">
                                 <strong className="time">
                                     {formatTime(time) }
                                 </strong>

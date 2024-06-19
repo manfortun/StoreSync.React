@@ -76,7 +76,7 @@ const DailySales = () => {
     }
 
     return (
-        (dailySales && (
+        (dailySales ? (
             <div className="d-flex flex-column justify-content-start align-items-center pt-3 pb-5 overflow-y-auto">
                 <h3>Daily Sales</h3>
                 <div className="d-flex flex-row justify-content-center align-items-center p-3">
@@ -146,7 +146,9 @@ const DailySales = () => {
                     ))}
                 </div>
             </div>
-        ))
+        ) : <div className="d-flex flex-column justify-content-start align-items-center pt-5 overflow-y-auto bg">
+                <div className="calculating-gif" title="Calculating sales..."></div>
+            </div>)
     )
 }
 

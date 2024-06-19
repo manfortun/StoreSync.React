@@ -29,7 +29,6 @@ public class TestController : ControllerBase
 
         foreach (var index in Enumerable.Range(1, count))
         {
-            Console.WriteLine(index);
             var newSale = new Sale
             {
                 DateOfPurchase = startDate.AddDays(random.Next((endDate - startDate).Days + 1)),

@@ -57,6 +57,16 @@
     background-color: #DEEFE7
 }
 
+.calculating-gif {
+    background-image: url("../assets/calculater.gif");
+    border-radius: 50%;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    height: 300px;
+    width: 300px;
+}
+
 .s-1 {
     background-color: rgba(68, 196, 175, 0.3);
 }

@@ -56,18 +56,33 @@ input::-webkit-inner-spin-button {
 
 .purchase {
     background-color: white;
-    padding: 1rem;
+    padding: 8px;
+    padding-right: 1.5rem;
     position: relative;
     width: 100%;
     animation-name: reveal;
-    margin-bottom: 5px;
     animation-duration: 0.5s;
+    border-bottom: 1px dashed lightgray;
+    border-left: 1px solid lightgray;
+    border-right: 1px solid lightgray;
     cursor: pointer;
     display: flex;
     flex-direction: row;
     align-items: center;
     vertical-align: middle;
-    border-radius: 8px;
+    transition: all ease-in-out 0.2s;
+}
+
+.purchase:last-of-type {
+    border-end-end-radius: 10px;
+    border-end-start-radius: 10px;
+    border-bottom: 1px solid lightgray;
+}
+
+.purchase:first-of-type {
+    border-start-start-radius: 10px;
+    border-start-end-radius: 10px;
+    border-top: 1px solid lightgray;
 }
 
 .time {
@@ -144,6 +159,7 @@ input::-webkit-inner-spin-button {
     font-weight: 700;
     font-size: 60px;
     margin: 0px;
+    margin-bottom: -15px;
     font-family: 'Poppins', sans-serif!important;
 }
 
@@ -155,8 +171,13 @@ input::-webkit-inner-spin-button {
     font-weight: 600!important;
 }
 
+.idle-color {
+    color: white;
+    opacity: 0.9;
+    text-shadow: 5px 5px 15px rgba(0,0,0, 0.7);
+}
+
 .bg-design {
-    background-image: url("../assets/QkH7os.jpg");
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center;
@@ -179,6 +200,7 @@ input::-webkit-inner-spin-button {
     background-color: white;
     opacity: 0.3;
     transition: all 0.5s ease-in-out;
+    box-shadow: 5px 5px 15px rgba(0,0,0, 0.7);
 }
 
 .counter.active {

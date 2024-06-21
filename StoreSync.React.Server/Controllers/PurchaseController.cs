@@ -16,7 +16,7 @@ public class PurchaseController : ControllerBase
         _unitOfWork = new UnitOfWork(context);
     }
 
-    [HttpGet]
+    [HttpGet("{date}")]
     public IActionResult GetSales(DateTime date)
     {
         var sales = _unitOfWork.Sales.GetAll(s => s.DateOfPurchase.Date == date.Date);
@@ -47,6 +47,58 @@ public class PurchaseController : ControllerBase
         }
 
         return Ok(salesRead);
+    }
+
+    [HttpGet("GetHourlySales/{date}")]
+    public IActionResult GetHourlySales(DateTime date)
+    {
+        var sales = _unitOfWork.Sales.GetAll(s => s.DateOfPurchase.Date == date.Date);
+        var payments = _unitOfWork.DebtPayments.GetAll(s => s.DateCreated.Date == date.Date);
+        var prices = _unitOfWork.Prices.GetAll();
+
+        var salesRangeRead = new SalesRangeRead
+        {
+            Debts = new Dictionary<DateTime, double>(),
+            Sales = new Dictionary<DateTime, double>(),
+            Average = 0
+        };
+
+        DateTime currentDate = date.Date;
+        while (currentDate < date.Date.AddDays(1))
+        {
+            salesRangeRead.Sales.Add(currentDate, 0);
+            salesRangeRead.Debts.Add(currentDate, 0);
+            currentDate = currentDate.AddHours(1);
+        }
+
+        foreach (var sale in sales)
+        {
+            bool isDebt = !string.IsNullOrEmpty(sale.DebtId);
+            DateTime dateOfSale = salesRangeRead.Sales.Keys.Where(k => k <= sale.DateOfPurchase).Max();
+
+            foreach (var purchase in sale.Purchases)
+            {
+                var price = prices.Where(p => p.Id == purchase.ProductId && p.DateCreated <= sale.DateOfPurchase).MaxBy(p => p.DateCreated)?.Value ?? 0;
+
+                if (isDebt)
+                {
+                    salesRangeRead.Debts[dateOfSale] += purchase.Count * price;
+                }
+                else
+                {
+                    salesRangeRead.Sales[dateOfSale] += purchase.Count * price;
+                }
+            }
+        }
+
+        foreach (var payment in payments)
+        {
+            DateTime dateOfSale = salesRangeRead.Sales.Keys.Where(k => k <= payment.DateCreated).Max();
+
+            salesRangeRead.Sales[dateOfSale] += payment.Payment;
+        }
+
+        return Ok(salesRangeRead);
     }
 
     [HttpGet("{from}~{to}")]
@@ -130,6 +182,23 @@ public class PurchaseController : ControllerBase
         return Ok(salesRangeRead);
     }
 
+    [HttpGet("CompoundSummary/{to}")]
+    public IActionResult GetCompoundSummary(DateTime to)
+    {
+        var sales = _unitOfWork.Sales.GetAll(s => s.DateOfPurchase.Date <= to.Date && string.IsNullOrEmpty(s.DebtId));
+
+        var summary = new SaleSummary
+        {
+            ProductSales = new Dictionary<string, ProductSale>()
+        };
+
+        if (!sales.Any()) return Ok(summary);
+
+        CreateSummary(to, sales, ref summary);
+
+        return Ok(summary);
+    }
+
     [HttpGet("Summary/{to}")]
     public IActionResult GetSummary(DateTime to)
     {
@@ -141,6 +210,18 @@ public class PurchaseController : ControllerBase
         };
 
         if (!sales.Any()) return Ok(summary);
+
+        CreateSummary(to, sales, ref summary);
+
+        return Ok(summary);
+    }
+
+    private void CreateSummary(DateTime to, IEnumerable<Sale> sales, ref SaleSummary summary)
+    {
+        summary = new SaleSummary
+        {
+            ProductSales = new Dictionary<string, ProductSale>()
+        };
 
         double saleForTheDay = 0;
 
@@ -162,6 +243,7 @@ public class PurchaseController : ControllerBase
                     {
                         Name = purchase.Product.Name,
                         Subtitle = purchase.Product.Subtitle,
+                        PurchaseDates = new List<DateTime>(),
                         Count = 0,
                         Total = 0
                     });
@@ -169,10 +251,9 @@ public class PurchaseController : ControllerBase
 
                 summary.ProductSales[purchase.ProductId].Count += purchase.Count;
                 summary.ProductSales[purchase.ProductId].Total += purchaseTotal;
+                summary.ProductSales[purchase.ProductId].PurchaseDates.Add(sale.DateOfPurchase);
             }
         }
-
-        return Ok(summary);
     }
 
     [HttpGet("TopProducts")]
@@ -208,6 +289,23 @@ public class PurchaseController : ControllerBase
 
     [HttpGet("DailySales")]
     public IActionResult GetDailySales()
+    {
+        var sales = _unitOfWork.Sales.GetAll();
+        var payments = _unitOfWork.DebtPayments.GetAll();
+
+        var dailySales = this.InitializeDailySalesRead(sales);
+        double grandTotal = this.CalculateSalesAndDebts(sales, dailySales);
+        grandTotal += this.CalculatePayments(payments, dailySales);
+
+        dailySales.NoOfDays = dailySales.Sales.Keys.Count;
+        dailySales.AverageSale = this.FormatAmount(grandTotal / Math.Max(dailySales.NoOfDays, 1));
+        dailySales.TotalSales = this.FormatAmount(grandTotal);
+
+        return Ok(dailySales);
+    }
+
+    [HttpGet("GetDashboardData")]
+    public IActionResult GetDashboardData()
     {
         var sales = _unitOfWork.Sales.GetAll();
         var payments = _unitOfWork.DebtPayments.GetAll();

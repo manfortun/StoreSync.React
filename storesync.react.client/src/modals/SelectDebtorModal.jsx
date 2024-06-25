@@ -49,15 +49,15 @@ function DebtorModal({ isOpen, onClose, onDebtorSelected }) {
             <div className="d-flex flex-column">
                 <div>Select debtor</div>
                 <div className="form-floating mb-3">
-                    <input type="text" className="form-control" value={selectedDebtorName} onChange={handleSelectedDebtorNameChange} onKeyDown={setNewDebtor} id="floatingInput" placeholder="Enter debtor's name" />
+                    <input type="text" className="form-control focusable" value={selectedDebtorName} onChange={handleSelectedDebtorNameChange} onKeyDown={setNewDebtor} id="floatingInput" placeholder="Enter debtor's name" />
                     <label htmlFor="floatingInput">Debtor's Name</label>
                 </div>
-                <ul>
+                <ul className="mb-5">
                     {filterDebtors().map(debtor => (
-                        <li><a href="#" className="text-black fs-3" onClick={() => onDebtorSelected(debtor.name) }>{debtor.name}</a></li>
+                        <li key={debtor.name }><button href="#" className="btn text-black fs-3" onClick={() => onDebtorSelected(debtor.name) }>{debtor.name}</button></li>
                     )) }
                 </ul>
-                <button onClick={onClose} className="btn btn-sm mt-auto">Close Modal</button>
+                <button onClick={onClose} className="btn btn-danger">Close Window</button>
             </div>
         </Modal>
     );

@@ -50,6 +50,11 @@ const Home = () => {
     useEffect(() => {
         const getBarcodes = async () => {
             try {
+                let connectionResponse;
+                do {
+                    connectionResponse = await axios.get(`${BASE_URL}/Product/keep-alive`);
+                } while (connectionResponse.status !== 200);
+
                 const response = await axios.get(`${BASE_URL}/Product/GetBarcodes`);
                 setRegisteredBarcodes(response.data);
             } catch {

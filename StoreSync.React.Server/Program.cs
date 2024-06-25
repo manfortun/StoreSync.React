@@ -1,5 +1,8 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using StoreSync.React.Server.DataAccess;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,12 +13,32 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+}).AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = "StoreSync",
+        ValidAudience = "StoreSync",
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("your-256-bit-secret-key-for-jwt-signing-12345"))
+    };
+});
+
+builder.Services.AddAuthorization();
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowSpecificOrigin",
         builder =>
         {
-            builder.WithOrigins("https://localhost:5173", "http://192.168.1.4:81", "http://localhost:81")
+            builder.WithOrigins("https://localhost:5173", "http://192.168.1.14:81", "http://localhost:81")
                 .AllowAnyHeader()
                 .AllowAnyMethod()
                 .AllowCredentials();
@@ -43,6 +66,9 @@ if (app.Environment.IsDevelopment())
 app.UseCors("AllowSpecificOrigin");
 
 app.UseHttpsRedirection();
+app.UseRouting();
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapControllers();
 

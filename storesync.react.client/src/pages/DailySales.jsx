@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { BsCalendar, BsCash, BsBrightnessHigh } from 'react-icons/bs';
+import { BsCalendar, BsCash, BsBrightnessHigh, BsBoxArrowUpRight } from 'react-icons/bs';
 import axios from 'axios';
 import { BASE_URL } from '../../utils/constants';
 import './DailySales.css';
@@ -78,7 +78,12 @@ const DailySales = () => {
     return (
         (dailySales ? (
             <div className="d-flex flex-column justify-content-start align-items-center pt-3 overflow-y-auto">
-                <h3>Daily Sales</h3>
+                <div className="d-flex flex-row justify-content-center align-items-center">
+                    <h3>Daily Sales</h3>
+                    <a href="http://localhost:82" target="_blank" rel="noopener noreferrer" title="Go to expanded dashboard page.">
+                        <BsBoxArrowUpRight className="mb-2 icon text-black"/>
+                    </a>
+                </div>
                 <div className="d-flex flex-row justify-content-center align-items-center p-3">
                     <div className="summary s-1">
                         <BsCash className="mb-2 icon"/>

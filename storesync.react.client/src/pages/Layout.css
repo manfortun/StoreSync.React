@@ -18,6 +18,15 @@ a {
     transition: all 0.3s ease-in-out;
 }
 
+.nowrap {
+    white-space: nowrap;
+}
+
+.circular-img {
+    border-radius: 50%;
+    overflow: hidden;
+}
+
 a.hover:hover {
     background-color: white;
     color: rgb(var(--bs-primary-rgb))!important;

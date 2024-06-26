@@ -1,10 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import { BsCalendar, BsCash, BsBrightnessHigh, BsBoxArrowUpRight } from 'react-icons/bs';
 import axios from 'axios';
+import React, { useEffect, useState } from 'react';
+import { BsBoxArrowUpRight, BsBrightnessHigh, BsCalendar, BsCash } from 'react-icons/bs';
+import { Link } from 'react-router-dom';
 import { BASE_URL } from '../../utils/constants';
 import './DailySales.css';
-import { Link } from 'react-router-dom';
-import Dashboard from './Dashboard';
 
 const DailySales = () => {
     const [dailySales, setDailySales] = useState(null);

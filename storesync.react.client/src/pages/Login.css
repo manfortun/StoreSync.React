@@ -11,7 +11,15 @@
     box-shadow: rgba(150, 150, 150, 0.4) 10px 10px;
 }
 
+.clickable {
+    cursor: pointer;
+}
+
 .pin-bg {
     background-color: rgba(200,200,200, 0.1);
     height: 100vh;
+}
+
+.mw-5 {
+    min-width: 30rem;
 }

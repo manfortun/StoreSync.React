@@ -1,7 +1,7 @@
+import { useContext, useState } from 'react';
 import { BsFillLockFill } from 'react-icons/bs';
-import { Outlet, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { AuthContext } from '../AuthProvider';
-import { useState, useContext } from 'react';
 import "./Login.css";
 
 const Login = () => {

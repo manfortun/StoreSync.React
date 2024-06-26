@@ -1,12 +1,17 @@
-import { BsArchiveFill, BsCreditCard2BackFill, BsFillHouseFill, BsSpeedometer, BsUpcScan, BsBoxArrowInRight } from 'react-icons/bs';
+import { useContext, useEffect, useState } from 'react';
+import { BsArchiveFill, BsBoxArrowInRight, BsCreditCard2BackFill, BsFillHouseFill, BsPersonCircle, BsSpeedometer, BsUpcScan } from 'react-icons/bs';
 import { Outlet } from "react-router-dom";
-import { useContext } from 'react';
-import { AuthContext } from '../AuthProvider';
+import { UserAuthContext } from '../UserAuthProvider';
 import "./Layout.css";
 
 const Layout = () => {
-    const context = useContext(AuthContext);
+    const context = useContext(UserAuthContext);
+    const [loggedUser, setLoggedUser] = useState();
 
+    useEffect(() => {
+        const logged = context.getLoggedUser();
+        setLoggedUser(logged);
+    }, [context])
 
     return (
         <>
@@ -21,8 +26,20 @@ const Layout = () => {
                     <a className="hover" href="/register"><BsUpcScan className="mb-1 d-md-none d-flex" title="Register"></BsUpcScan>  <span className="d-none d-md-flex">Register</span></a>
                     <a className="hover" href="/debtsList"><BsCreditCard2BackFill className="mb-1 d-md-none d-flex" title="Debts"></BsCreditCard2BackFill>  <span className="d-none d-md-flex">Debts</span></a>
                 </div>
-                <div className="ms-auto d-flex flex-row justify-content-center">
-                    <button className="btn text-white p-0 fs-5 pe-3" title="Logout" onClick={() => context.logout() }><BsBoxArrowInRight /></button>
+                <div className="ms-auto d-flex flex-row justify-content-center align-items-center">
+                    {context && loggedUser && (
+                        <div className="text-white nowrap me-2 d-flex flex-row justify-content-center align-items-center">
+                            {loggedUser.picture ? (
+                                <img src={loggedUser.picture} height={30} alt={loggedUser.display_name} className="circular-img me-2" />
+                            ) : (
+                                    <BsPersonCircle className="me-2" />
+                            )}
+                            <span>
+                                Hi {loggedUser.display_name}!
+                            </span>
+                        </div>
+                    )}
+                    <button className="btn text-white p-0 fs-5 me-3 m-0 d-flex flex-row justify-content-center align-items-center" title="Logout" onClick={() => context.logoutUser()}><BsBoxArrowInRight /></button>
                 </div>
             </div>
 

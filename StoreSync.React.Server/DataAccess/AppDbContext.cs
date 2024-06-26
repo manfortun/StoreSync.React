@@ -1,9 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using StoreSync.React.Server.Models;
 
 namespace StoreSync.React.Server.DataAccess;
 
-public class AppDbContext : DbContext
+public class AppDbContext : IdentityDbContext
 {
     public DbSet<Product> Products { get; set; }
     public DbSet<Price> Prices { get; set; }
@@ -12,6 +13,7 @@ public class AppDbContext : DbContext
     public DbSet<Debtor> Debtors { get; set; }
     public DbSet<Debt> Debts { get; set; }
     public DbSet<DebtPayment> DebtPayments { get; set; }
+    public DbSet<User> AppUsers { get; set; }
 
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 

@@ -13,6 +13,7 @@ public class UnitOfWork : IDisposable
     private BaseRepository<Debtor> _debtors = default!;
     private AuditableBaseRepository<Debt> _debts = default!;
     private AuditableBaseRepository<DebtPayment> _debtPayments = default!;
+    private BaseRepository<User> _users = default!;
 
     public SoftBaseRepository<Product> Products => _products ??= new SoftBaseRepository<Product>(_context);
     public AuditableBaseRepository<Price> Prices => _prices ??= new AuditableBaseRepository<Price>(_context);
@@ -21,6 +22,7 @@ public class UnitOfWork : IDisposable
     public BaseRepository<Debtor> Debtors => _debtors ??= new BaseRepository<Debtor>(_context);
     public AuditableBaseRepository<Debt> Debts => _debts ??= new AuditableBaseRepository<Debt>(_context);
     public AuditableBaseRepository<DebtPayment> DebtPayments => _debtPayments ??= new AuditableBaseRepository<DebtPayment>(_context);
+    public BaseRepository<User> Users => _users ??= new BaseRepository<User>(_context);
 
     public UnitOfWork(AppDbContext context)
     {

@@ -1,34 +1,38 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import React, { useContext } from 'react';
-import Layout from "./pages/Layout"
-import Home from "./pages/Home";
-import Register from "./pages/Register"
-import Dashboard from "./pages/Dashboard"
-import ProductsList from "./pages/ProductsList"
-import DebtsList from "./pages/DebtsList"
-import DailySales from "./pages/DailySales";
+import { GoogleOAuthProvider } from "@react-oauth/google";
+import React from 'react';
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { GoogleOAuthClientId } from "../utils/constants";
 import './App.css';
-import { AuthProvider } from "./AuthProvider";
-import PrivateRoute from './PrivateRoute';
-import Login from "./pages/Login";
-
+import LoginRoute from "./LoginRoute";
+import { UserAuthProvider } from "./UserAuthProvider";
+import DailySales from "./pages/DailySales";
+import Dashboard from "./pages/Dashboard";
+import DebtsList from "./pages/DebtsList";
+import Home from "./pages/Home";
+import ProductsList from "./pages/ProductsList";
+import Register from "./pages/Register";
+import SignUp from "./pages/SignUp";
+import UserLogin from "./pages/UserLogin";
 export default function App() {
     return (
-        <AuthProvider>
-            <BrowserRouter>
-                <Routes>
-                    <Route path="/login" element={<Login />} />
-                    <Route path="/" element={<PrivateRoute />}>
-                        <Route index element={<Home />} />
-                        <Route path="dailySales" element={<DailySales />} />
-                        <Route path="dashboard/:date" element={<Dashboard />} />
-                        <Route path="register" element={<Register />} />
-                        <Route path="productsList" element={<ProductsList /> } />
-                        <Route path="debtsList" element={<DebtsList /> } />
-                    </Route>
-                </Routes>
-            </BrowserRouter>
-        </AuthProvider>
+        <GoogleOAuthProvider clientId={GoogleOAuthClientId}>
+            <UserAuthProvider>
+                <BrowserRouter>
+                    <Routes>
+                        <Route path="/login" element={<UserLogin />} />
+                        <Route path="/signup" element={<SignUp/> }/>
+                        <Route path="/" element={<LoginRoute />}>
+                            <Route index element={<Home />} />
+                            <Route path="dailySales" element={<DailySales />} />
+                            <Route path="dashboard/:date" element={<Dashboard />} />
+                            <Route path="register" element={<Register />} />
+                            <Route path="productsList" element={<ProductsList /> } />
+                            <Route path="debtsList" element={<DebtsList /> } />
+                        </Route>
+                    </Routes>
+                </BrowserRouter>
+            </UserAuthProvider>
+        </GoogleOAuthProvider>
     );
 }
 

@@ -361,3 +361,5 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+/storesync.react.client/src/public/.env
+/storesync.react.client/src/public/process.env

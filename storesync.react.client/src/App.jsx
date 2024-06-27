@@ -1,7 +1,6 @@
 import { GoogleOAuthProvider } from "@react-oauth/google";
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import { GoogleOAuthClientId } from "../utils/constants";
 import './App.css';
 import LoginRoute from "./LoginRoute";
 import { UserAuthProvider } from "./UserAuthProvider";
@@ -13,9 +12,34 @@ import ProductsList from "./pages/ProductsList";
 import Register from "./pages/Register";
 import SignUp from "./pages/SignUp";
 import UserLogin from "./pages/UserLogin";
+import LoadingScreen from "./pages/LoadingScreen";
+import axios from 'axios';
+import { BASE_URL } from "../utils/constants";
 export default function App() {
+    const [googleClientId, setGoogleClientId] = useState();
+
+    useEffect(() => {
+        const getClientId = async () => {
+            try {
+                const response = await axios.get(`${BASE_URL}/Auth/Google/${0}`);
+
+                if (response.data) {
+                    setGoogleClientId(response.data);
+                }
+            } catch (error) {
+                console.error(error);
+            }
+        }
+
+        getClientId();
+    }, []);
+
+    if (!googleClientId) {
+        return <LoadingScreen message="Connecting to the server..." ></LoadingScreen>;
+    }
+
     return (
-        <GoogleOAuthProvider clientId={GoogleOAuthClientId}>
+        <GoogleOAuthProvider clientId={googleClientId}>
             <UserAuthProvider>
                 <BrowserRouter>
                     <Routes>

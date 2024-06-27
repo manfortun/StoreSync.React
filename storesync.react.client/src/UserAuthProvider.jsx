@@ -3,6 +3,7 @@ import { useGoogleLogin, googleLogout } from '@react-oauth/google';
 import { jwtDecode } from 'jwt-decode';
 import axios from 'axios';
 import { BASE_URL } from '../utils/constants';
+import LoadingScreen from './pages/LoadingScreen';
 
 export const UserAuthContext = createContext();
 
@@ -184,7 +185,7 @@ export const UserAuthProvider = ({ children }) => {
     }
 
     if (loading) {
-        return <p>Loading...</p>;
+        return <LoadingScreen message="Please wait..." ></LoadingScreen>;
     }
 
     return (

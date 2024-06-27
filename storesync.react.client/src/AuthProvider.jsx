@@ -3,6 +3,7 @@ import { jwtDecode } from 'jwt-decode';
 import PropTypes from 'prop-types';
 import React, { createContext, useEffect, useState } from 'react';
 import { BASE_URL } from '../utils/constants';
+import LoadingScreen from './pages/LoadingScreen';
 
 export const AuthContext = createContext();
 
@@ -50,7 +51,7 @@ export const AuthProvider = ({ children }) => {
     }, [user]);
 
     if (loading) {
-        return <p>Loading...</p>;
+        return <LoadingScreen message="Please wait..." ></LoadingScreen>;
     }
 
     return (
